@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UnityWebRunner | Engine Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="glass-panel">
+      <main class="preview-area">
+        <div id="canvas-container">
+          <iframe
+            id="gameFrame"
+            title="Engine Output"
+            src="about:blank"
+          ></iframe>
+        </div>
+        <div id="status">SYSTEM READY</div>
+      </main>
+
+      <aside class="controls">
+        <header>
+          <h1>Unity<span>Web</span>Runner</h1>
+        </header>
+
+        <div class="section">
+          <h2>Build Source</h2>
+          <div class="upload-wrapper">
+            <input type="file" id="files" webkitdirectory directory multiple />
+            <button class="primary-btn" onclick="upload()">
+              Initialize Engine
+            </button>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Resolution (3:2)</h2>
+          <div class="res-grid">
+            <button class="res-btn" onclick="setResolution(720, 480, this)">
+              720p
+            </button>
+            <button
+              class="res-btn active"
+              onclick="setResolution(960, 640, this)"
+            >
+              960p
+            </button>
+            <button class="res-btn" onclick="setResolution(1200, 800, this)">
+              1200p
+            </button>
+            <button class="res-btn" onclick="setResolution(1440, 960, this)">
+              1440p
+            </button>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Compression</h2>
+          <select id="compression" onchange="updateCompression()">
+            <option value="none">None</option>
+            <option value="gzip">Gzip</option>
+            <option value="brotli">Brotli</option>
+          </select>
+        </div>
+      </aside>
+    </div>
+
+    <script>
+      function setResolution(width, height, element) {
+        const container = document.getElementById("canvas-container");
+        const status = document.getElementById("status");
+        document
+          .querySelectorAll(".res-btn")
+          .forEach((btn) => btn.classList.remove("active"));
+        element.classList.add("active");
+        container.style.maxWidth = `${width}px`;
+        status.innerText = `ENGINE ACTIVE | ${width}x${height}`;
+        const frame = document.getElementById("gameFrame");
+        frame.style.width = `${width}px`;
+        frame.style.height = `${height}px`;
+      }
+
+      async function upload() {
+        const fileInput = document.getElementById("files");
+        const status = document.getElementById("status");
+        if (fileInput.files.length === 0) {
+          status.innerText = "ERROR: NO SOURCE DETECTED";
+          return;
+        }
+        status.innerText = "STREAMING SOURCE DATA...";
+        const formData = new FormData();
+        Array.from(fileInput.files).forEach((file) => {
+          formData.append("files", file, file.webkitRelativePath);
+        });
+        try {
+          const response = await fetch("/upload", {
+            method: "POST",
+            body: formData,
+          });
+          if (response.ok) {
+            const frame = document.getElementById("gameFrame");
+            frame.src = `/?t=${Date.now()}`;
+            status.innerText = "ENGINE INITIALIZED";
+          }
+        } catch (error) {
+          status.innerText = "CONNECTION FAILED";
+          console.error("Upload Error:", error);
+        }
+      }
+
+      async function updateCompression() {
+        const type = document.getElementById("compression").value;
+        const status = document.getElementById("status");
+        status.innerText = `CONFIGURING ${type.toUpperCase()}...`;
+        try {
+          await fetch(`/set-compression?type=${type}`);
+          const frame = document.getElementById("gameFrame");
+          frame.src = frame.src.split("?")[0] + `?t=${Date.now()}`;
+          status.innerText = "ENGINE ACTIVE";
+        } catch (error) {
+          console.error("Compression Switch Error:", error);
+        }
+      }
+    </script>
+  </body>
+</html>

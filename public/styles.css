@@ -1,0 +1,342 @@
+:root {
+  --glass: rgba(255, 255, 255, 0.06);
+  --glass-strong: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.12);
+
+  --accent: #00a2ff;
+  --accent-glow: rgba(0, 162, 255, 0.35);
+
+  --bg-1: #0b1220;
+  --bg-2: #020617;
+
+  --radius-lg: 28px;
+  --radius-md: 14px;
+}
+
+/* ===== BASE ===== */
+body {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px;
+  overflow: hidden;
+
+  background: radial-gradient(
+    circle at top,
+    #1e293b 0%,
+    #0b1220 40%,
+    #020617 100%
+  );
+  color: white;
+  box-sizing: border-box;
+}
+
+/* ===== MAIN GLASS PANEL ===== */
+.glass-panel {
+  display: grid;
+  /* Let preview fill available space, fixed sidebar width */
+  grid-template-columns: 1fr 280px;
+  gap: 16px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-height: 100vh;
+}
+
+/* subtle glow behind panel */
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at top left,
+    rgba(0, 162, 255, 0.12),
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+/* ===== CONTROLS ===== */
+.controls {
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  padding-left: 16px;
+  padding-right: 8px;
+  overflow-y: auto;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.preview-area {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  overflow: hidden; /* Important: clips any iframe overflow */
+  min-height: 0;
+  gap: 12px;
+  padding: 0;
+}
+
+#canvas-container {
+  display: flex;
+  justify-content: center; /* Centers the game if resolution is smaller than window */
+  align-items: center;
+  background: #000;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  overflow: auto; /* Allows scrollbars if resolution exceeds window size */
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+#gameFrame {
+  border: none;
+  display: block;
+  /* Remove 100% width/height so it takes the literal pixels assigned by JS */
+  flex-shrink: 0;
+}
+/* subtle hover lift */
+#canvas-container:hover {
+  transform: translateY(-2px);
+}
+
+/* iframe */
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+/* ===== BUTTONS ===== */
+button {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+
+  color: white;
+  cursor: pointer;
+
+  border-radius: 10px;
+
+  padding: 8px 12px;
+  font-size: 13px;
+
+  transition: all 0.2s ease;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+button:hover {
+  background: var(--glass-strong);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+/* active resolution button */
+.res-btn.active {
+  background: var(--accent);
+  border-color: white;
+  box-shadow:
+    0 0 0 3px var(--accent-glow),
+    0 10px 25px rgba(0, 162, 255, 0.25);
+}
+
+/* primary button */
+.primary-btn {
+  width: 100%;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.primary-btn:hover {
+  background: #0088cc;
+  border-color: white;
+  box-shadow:
+    0 0 0 3px var(--accent-glow),
+    0 10px 25px rgba(0, 162, 255, 0.25);
+}
+
+/* optional: smooth text rendering */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+/* ===== SECTION CONTAINERS ===== */
+.section {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  padding: 12px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  margin-bottom: 4px;
+  transition: border-color 0.3s ease;
+  flex-shrink: 0;
+}
+
+.section:hover {
+  border-color: rgba(0, 162, 255, 0.3);
+}
+
+.section h2 {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ===== FILE INPUT SYSTEM ===== */
+input[type="file"] {
+  width: 100%;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px dashed var(--glass-border);
+  border-radius: 10px;
+  color: #a0aec0;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 4px;
+  box-sizing: border-box;
+}
+
+/* Custom styling for the "Choose Files" button inside the input */
+input[type="file"]::file-selector-button {
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-border);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  margin-right: 12px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: 0.2s;
+}
+
+input[type="file"]:hover {
+  border-color: var(--accent);
+  background: rgba(0, 162, 255, 0.05);
+}
+
+input[type="file"]:hover::file-selector-button {
+  background: var(--accent);
+  border-color: white;
+}
+
+/* ===== SELECT DROPDOWN ===== */
+select {
+  width: 100%;
+  padding: 8px 12px;
+  appearance: none; /* Removes default browser arrow */
+  background-color: rgba(255, 255, 255, 0.05);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 14px;
+
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  color: white;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+}
+
+select:hover {
+  border-color: var(--accent);
+  background-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 15px rgba(0, 162, 255, 0.1);
+}
+
+select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* Style for the options inside (Note: standard HTML selects have limited styling for options) */
+select option {
+  background-color: #0f172a; /* Dark background for dropdown menu */
+  color: white;
+  padding: 10px;
+}
+
+/* ===== HEADER ===== */
+.controls header {
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.controls header h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+.controls header h1 span {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ===== SECTIONS CONTAINER ===== */
+.controls > div {
+  flex-shrink: 0;
+}
+
+/* ===== UPLOAD WRAPPER ===== */
+.upload-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ===== RES GRID ===== */
+.res-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* ===== STATUS ELEMENT ===== */
+#status {
+  padding: 8px 12px;
+  background: rgba(0, 162, 255, 0.1);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-align: center;
+  color: var(--accent);
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
