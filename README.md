@@ -4,7 +4,7 @@ Run **Unity WebGL builds locally** using **Bun + Docker** with ease.
 
 A lightweight TypeScript-based server for serving Unity WebGL builds without complex setup.
 
----
+
 
 ## ⚡ Features
 
@@ -14,7 +14,7 @@ A lightweight TypeScript-based server for serving Unity WebGL builds without com
 * ⚡ Fast static file serving
 * 📦 Simple and minimal setup
 
----
+
 
 ## 🛠️ Requirements
 
@@ -23,14 +23,14 @@ A lightweight TypeScript-based server for serving Unity WebGL builds without com
 Install **Bun**:
 👉 [https://bun.sh](https://bun.sh)
 
----
+
 
 ### Option 2 — With Docker
 
 Install Docker:
 👉 [https://www.docker.com](https://www.docker.com)
 
----
+
 
 ## 🚀 Run Locally (Without Docker)
 
@@ -45,7 +45,7 @@ Then open:
 http://localhost:8000
 ```
 
----
+
 
 ## 🐳 Run with Docker
 
@@ -61,7 +61,7 @@ docker build -t unitywebrunner .
 docker run -p 8000:8000 unitywebrunner
 ```
 
----
+
 
 ## 📁 How It Works
 
@@ -70,7 +70,7 @@ docker run -p 8000:8000 unitywebrunner
 * Uses TypeScript for clean structure
 * Exposes port **8000**
 
----
+
 
 ## 📌 Default Docker Setup
 
@@ -89,7 +89,7 @@ EXPOSE 8000
 CMD ["bun", "run", "index.ts"]
 ```
 
----
+
 
 ## 🌐 Use Case
 
@@ -97,7 +97,7 @@ CMD ["bun", "run", "index.ts"]
 * Serving builds without external hosting
 * Quick development preview environment
 
----
+
 
 ## ⚡ Quick Start (One Line)
 
@@ -105,7 +105,6 @@ CMD ["bun", "run", "index.ts"]
 bun install && bun run index.ts
 ```
 
----
 
 ## 📜 License
 
