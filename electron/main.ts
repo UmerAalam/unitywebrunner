@@ -46,6 +46,69 @@ function createWindow() {
   mainWindow.loadURL(`http://${SERVER_HOST}:${serverPort}/`)
 }
 
+function indexOfBuffer(haystack: Buffer, needle: Buffer, start = 0) {
+  return haystack.indexOf(needle, start)
+}
+
+function getCommonUploadPrefix(fileNames: string[]) {
+  if (fileNames.length === 0) {
+    return null
+  }
+
+  const firstSegments = fileNames.map((name) => name.split('/')[0])
+  const first = firstSegments[0]
+
+  if (!first || firstSegments.some((segment) => segment !== first)) {
+    return null
+  }
+
+  const prefix = `${first}/`
+  return fileNames.every((name) => name.startsWith(prefix)) ? first : null
+}
+
+function parseMultipartBody(body: Buffer, boundary: string) {
+  const boundaryMarker = Buffer.from(`--${boundary}`)
+  const headerSeparator = Buffer.from('\r\n\r\n')
+  const entries: Array<{ fileName: string; content: Buffer }> = []
+
+  let cursor = 0
+  while (cursor < body.length) {
+    const boundaryStart = indexOfBuffer(body, boundaryMarker, cursor)
+    if (boundaryStart === -1) {
+      break
+    }
+
+    const partStart = boundaryStart + boundaryMarker.length
+    const nextBoundary = indexOfBuffer(body, boundaryMarker, partStart)
+    if (nextBoundary === -1) {
+      break
+    }
+
+    const part = body.subarray(partStart, nextBoundary)
+    cursor = nextBoundary
+
+    const headerStart = part.indexOf(headerSeparator)
+    if (headerStart === -1) {
+      continue
+    }
+
+    const headerText = part.subarray(0, headerStart).toString('utf8')
+    const filenameMatch = headerText.match(/filename="([^"]+)"/)
+    if (!filenameMatch) {
+      continue
+    }
+
+    let content = part.subarray(headerStart + headerSeparator.length)
+    if (content.length >= 2 && content[content.length - 2] === 13 && content[content.length - 1] === 10) {
+      content = content.subarray(0, content.length - 2)
+    }
+
+    entries.push({ fileName: filenameMatch[1], content })
+  }
+
+  return entries
+}
+
 function startServer() {
   return new Promise<number>((resolve, reject) => {
     if (server) {
@@ -72,7 +135,7 @@ function startServer() {
         for await (const chunk of req) {
           chunks.push(chunk)
         }
-        const body = Buffer.concat(chunks).toString()
+        const body = Buffer.concat(chunks)
         const boundary = req.headers['content-type']?.split('boundary=')[1]
 
         if (!boundary) {
@@ -81,27 +144,23 @@ function startServer() {
           return
         }
 
-        const parts = body.split(`--${boundary}`).filter((part) => part.trim() && !part.trim().startsWith('--'))
+        const parts = parseMultipartBody(body, boundary)
         const buildFolder = `build_${Date.now()}`
         const uploadBase = join(app.getPath('userData'), 'uploads', buildFolder)
+        const stripPrefix = getCommonUploadPrefix(parts.map((part) => part.fileName))
 
         for (const part of parts) {
-          const match = part.match(/filename="([^"]+)"/)
-          if (match) {
-            let fileName = match[1]
-            const contentMatch = part.split('\r\n\r\n')
-            if (contentMatch.length > 1) {
-              const content = contentMatch[contentMatch.length - 1]
-              const parts2 = fileName.split('/')
-              fileName = parts2.length > 1 ? parts2.slice(1).join('/') : fileName
-              const dest = join(uploadBase, fileName)
-              const destDir = dirname(dest)
-              if (!existsSync(destDir)) {
-                mkdirSync(destDir, { recursive: true })
-              }
-              writeFileSync(dest, content)
-            }
+          let fileName = part.fileName.replace(/^\.\/+/, '')
+          if (stripPrefix && fileName.startsWith(`${stripPrefix}/`)) {
+            fileName = fileName.slice(stripPrefix.length + 1)
           }
+
+          const dest = join(uploadBase, fileName)
+          const destDir = dirname(dest)
+          if (!existsSync(destDir)) {
+            mkdirSync(destDir, { recursive: true })
+          }
+          writeFileSync(dest, part.content)
         }
 
         ROOT_DIR = uploadBase
