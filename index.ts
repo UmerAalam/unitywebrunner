@@ -1,6 +1,6 @@
 import { serve } from "bun";
 import { join, dirname } from "path";
-import { mkdirSync, existsSync } from "fs";
+import { mkdirSync } from "fs";
 
 let ROOT_DIR = "";
 let COMPRESSION: "none" | "gzip" | "brotli" = "none";
