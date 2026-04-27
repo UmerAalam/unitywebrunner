@@ -3,6 +3,8 @@ node_modules
 
 #builds output
 uploads
+dist-electron
+release
 # output
 out
 dist

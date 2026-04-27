@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron'
+const { contextBridge, ipcRenderer } = require('electron') as any
 
 contextBridge.exposeInMainWorld('electronAPI', {
   getServerStatus: () => ipcRenderer.invoke('get-server-status'),
@@ -7,9 +7,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   selectFiles: () => ipcRenderer.invoke('select-files'),
   getGameUrl: () => ipcRenderer.invoke('get-game-url'),
   onServerStarted: (callback: (port: number) => void) => {
-    ipcRenderer.on('server-started', (_, port) => callback(port))
+    ipcRenderer.on('server-started', (_: any, port: number) => callback(port))
   },
   onBuildLoaded: (callback: (path: string) => void) => {
-    ipcRenderer.on('build-loaded', (_, path) => callback(path))
+    ipcRenderer.on('build-loaded', (_: any, path: string) => callback(path))
   },
 })

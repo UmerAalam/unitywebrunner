@@ -4,6 +4,7 @@ import { mkdirSync } from "fs";
 
 let ROOT_DIR = "";
 let COMPRESSION: "none" | "gzip" | "brotli" = "none";
+const REQUESTED_PORT = process.env.PORT ? Number(process.env.PORT) : undefined;
 
 const MIME_TYPES: Record<string, string> = {
   ".html": "text/html",
@@ -17,9 +18,7 @@ const MIME_TYPES: Record<string, string> = {
   ".ico": "image/x-icon",
 };
 
-serve({
-  port: 8000,
-  async fetch(req) {
+const handler = async (req: Request) => {
     const url = new URL(req.url);
 
     // 1. UPLOAD HANDLER (With Path Flattening)
@@ -106,7 +105,46 @@ serve({
     }
 
     return new Response(`404: File not found at ${cleanPath}`, { status: 404 });
-  },
-});
+};
 
-console.log("🚀 Liquid Studio running at http://localhost:8000");
+function start() {
+  const attemptedPorts = new Set<number>();
+  const candidatePorts: number[] = [];
+
+  if (REQUESTED_PORT !== undefined) {
+    candidatePorts.push(REQUESTED_PORT);
+  }
+
+  while (candidatePorts.length < 20) {
+    const port = 20000 + Math.floor(Math.random() * 40000);
+    if (!attemptedPorts.has(port)) {
+      attemptedPorts.add(port);
+      candidatePorts.push(port);
+    }
+  }
+
+  for (const port of candidatePorts) {
+    try {
+      const server = serve({
+        port,
+        fetch: handler,
+      });
+
+      console.log(`Unity WebRunner running at http://localhost:${server.port ?? port}`);
+      return;
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        (error as { code?: string }).code === "EADDRINUSE"
+      ) {
+        continue;
+      }
+
+      throw error;
+    }
+  }
+
+  throw new Error("No available port found for Unity WebRunner");
+}
+
+start();
