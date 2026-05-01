@@ -26,6 +26,52 @@ const MIME_TYPES: Record<string, string> = {
   '.ico': 'image/x-icon',
 }
 
+function resolveUnityAssetPath(rootDir: string, cleanPath: string) {
+  const compressionSuffix = COMPRESSION === 'brotli' ? '.br' : COMPRESSION === 'gzip' ? '.gz' : ''
+  const logicalPath = cleanPath.replace(/\.(br|gz)$/i, '')
+  const exactPath = join(rootDir, cleanPath)
+  const logicalFilePath = join(rootDir, logicalPath)
+  const compressedPath =
+    compressionSuffix && !cleanPath.toLowerCase().endsWith(compressionSuffix)
+      ? join(rootDir, `${cleanPath}${compressionSuffix}`)
+      : null
+
+  const candidates = [exactPath]
+  if (compressedPath) {
+    candidates.push(compressedPath)
+  }
+  if (logicalFilePath !== exactPath) {
+    candidates.push(logicalFilePath)
+  }
+
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) {
+      const encoding = candidate.endsWith('.br')
+        ? 'br'
+        : candidate.endsWith('.gz')
+          ? 'gzip'
+          : undefined
+      return { filePath: candidate, logicalPath, encoding }
+    }
+  }
+
+  return { filePath: exactPath, logicalPath, encoding: undefined as 'br' | 'gzip' | undefined }
+}
+
+function detectCompressionFromFiles(fileNames: string[]) {
+  const normalized = fileNames.map((name) => name.toLowerCase())
+
+  if (normalized.some((name) => name.endsWith('.br'))) {
+    return 'brotli' as const
+  }
+
+  if (normalized.some((name) => name.endsWith('.gz'))) {
+    return 'gzip' as const
+  }
+
+  return 'none' as const
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -148,6 +194,7 @@ function startServer() {
         const buildFolder = `build_${Date.now()}`
         const uploadBase = join(app.getPath('userData'), 'uploads', buildFolder)
         const stripPrefix = getCommonUploadPrefix(parts.map((part) => part.fileName))
+        COMPRESSION = detectCompressionFromFiles(parts.map((part) => part.fileName))
 
         for (const part of parts) {
           let fileName = part.fileName.replace(/^\.\/+/, '')
@@ -164,11 +211,14 @@ function startServer() {
         }
 
         ROOT_DIR = uploadBase
-        log.info(`Build uploaded: ${ROOT_DIR}`)
-        mainWindow?.webContents.send('build-loaded', ROOT_DIR)
+        log.info(`Build uploaded: ${ROOT_DIR} (${COMPRESSION})`)
+        mainWindow?.webContents.send('build-loaded', {
+          rootDir: ROOT_DIR,
+          compression: COMPRESSION,
+        })
 
         res.writeHead(200, { 'Content-Type': 'application/json' })
-        res.end(JSON.stringify({ success: true }))
+        res.end(JSON.stringify({ success: true, compression: COMPRESSION }))
         return
       }
 
@@ -209,14 +259,13 @@ function startServer() {
       }
 
       const cleanPath = pathname === '/' ? 'index.html' : pathname.replace(/^\//, '')
-      const finalFilePath = join(ROOT_DIR, cleanPath)
+      const { filePath: finalFilePath, logicalPath, encoding } = resolveUnityAssetPath(ROOT_DIR, cleanPath)
 
       if (existsSync(finalFilePath)) {
-        const ext = '.' + cleanPath.split('.').pop()?.toLowerCase()
+        const ext = '.' + logicalPath.split('.').pop()?.toLowerCase()
         res.setHeader('Content-Type', MIME_TYPES[ext] || 'application/octet-stream')
 
-        if (COMPRESSION === 'gzip') res.setHeader('Content-Encoding', 'gzip')
-        if (COMPRESSION === 'brotli') res.setHeader('Content-Encoding', 'br')
+        if (encoding) res.setHeader('Content-Encoding', encoding)
 
         res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp')
         res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')
@@ -271,7 +320,7 @@ ipcMain.handle('select-folder', async () => {
 ipcMain.handle('select-files', async () => {
   const result = await dialog.showOpenDialog(mainWindow!, {
     properties: ['openFile', 'multiSelections'],
-    filters: [{ name: 'Unity Build Files', extensions: ['html', 'js', 'wasm', 'data'] }]
+    filters: [{ name: 'Unity Build Folder', extensions: ['html', 'js', 'wasm', 'data'] }]
   })
   if (!result.canceled && result.filePaths.length > 0) {
     return { success: true, paths: result.filePaths }

@@ -18,6 +18,66 @@ const MIME_TYPES: Record<string, string> = {
   ".ico": "image/x-icon",
 };
 
+async function resolveUnityAssetPath(
+  rootDir: string,
+  cleanPath: string,
+  compression: "none" | "gzip" | "brotli",
+) {
+  const compressionSuffix =
+    compression === "brotli" ? ".br" : compression === "gzip" ? ".gz" : "";
+  const logicalPath = cleanPath.replace(/\.(br|gz)$/i, "");
+  const exactPath = join(rootDir, cleanPath);
+  const logicalFilePath = join(rootDir, logicalPath);
+  const compressedPath =
+    compressionSuffix && !cleanPath.toLowerCase().endsWith(compressionSuffix)
+      ? join(rootDir, `${cleanPath}${compressionSuffix}`)
+      : null;
+
+  const candidates = [exactPath];
+  if (compressedPath) {
+    candidates.push(compressedPath);
+  }
+  if (logicalFilePath !== exactPath) {
+    candidates.push(logicalFilePath);
+  }
+
+  for (const candidate of candidates) {
+    if (await Bun.file(candidate).exists()) {
+      const encoding = candidate.endsWith(".br")
+        ? "br"
+        : candidate.endsWith(".gz")
+          ? "gzip"
+          : undefined;
+
+      return {
+        filePath: candidate,
+        logicalPath,
+        encoding,
+      };
+    }
+  }
+
+  return {
+    filePath: exactPath,
+    logicalPath,
+    encoding: undefined,
+  };
+}
+
+function detectCompressionFromFiles(fileNames: string[]) {
+  const normalized = fileNames.map((name) => name.toLowerCase());
+
+  if (normalized.some((name) => name.endsWith(".br"))) {
+    return "brotli" as const;
+  }
+
+  if (normalized.some((name) => name.endsWith(".gz"))) {
+    return "gzip" as const;
+  }
+
+  return "none" as const;
+}
+
 const handler = async (req: Request) => {
     const url = new URL(req.url);
 
@@ -27,6 +87,11 @@ const handler = async (req: Request) => {
       const files = formData.getAll("files");
       const buildFolder = `build_${Date.now()}`;
       const uploadBase = join(process.cwd(), "uploads", buildFolder);
+      COMPRESSION = detectCompressionFromFiles(
+        files
+          .filter((entry): entry is File => entry instanceof File)
+          .map((entry) => entry.name),
+      );
 
       for (const entry of files) {
         if (entry instanceof File) {
@@ -44,8 +109,8 @@ const handler = async (req: Request) => {
       }
 
       ROOT_DIR = uploadBase;
-      console.log(`✅ Build Flattened & Ready: ${ROOT_DIR}`);
-      return Response.json({ success: true });
+      console.log(`✅ Build Flattened & Ready: ${ROOT_DIR} (${COMPRESSION})`);
+      return Response.json({ success: true, compression: COMPRESSION });
     }
 
     // 2. CONFIG HANDLER
@@ -81,12 +146,17 @@ const handler = async (req: Request) => {
 
     const cleanPath =
       url.pathname === "/" ? "index.html" : url.pathname.replace(/^\//, "");
-    const finalFilePath = join(ROOT_DIR, cleanPath);
+    const { filePath: finalFilePath, logicalPath, encoding } =
+      await resolveUnityAssetPath(
+      ROOT_DIR,
+      cleanPath,
+      COMPRESSION,
+    );
     const file = Bun.file(finalFilePath);
 
     if (await file.exists()) {
       const headers = new Headers();
-      const ext = "." + cleanPath.split(".").pop()?.toLowerCase();
+      const ext = "." + logicalPath.split(".").pop()?.toLowerCase();
 
       headers.set(
         "Content-Type",
@@ -94,8 +164,7 @@ const handler = async (req: Request) => {
       );
 
       // Handle Unity Compression
-      if (COMPRESSION === "gzip") headers.set("Content-Encoding", "gzip");
-      if (COMPRESSION === "brotli") headers.set("Content-Encoding", "br");
+      if (encoding) headers.set("Content-Encoding", encoding);
 
       // SharedArrayBuffer / Isolation headers (Required for Unity WebGL)
       headers.set("Cross-Origin-Embedder-Policy", "require-corp");

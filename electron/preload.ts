@@ -9,7 +9,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onServerStarted: (callback: (port: number) => void) => {
     ipcRenderer.on('server-started', (_: any, port: number) => callback(port))
   },
-  onBuildLoaded: (callback: (path: string) => void) => {
-    ipcRenderer.on('build-loaded', (_: any, path: string) => callback(path))
+  onBuildLoaded: (callback: (payload: any) => void) => {
+    ipcRenderer.on('build-loaded', (_: any, payload: any) => callback(payload))
   },
 })

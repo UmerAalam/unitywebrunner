@@ -224,7 +224,7 @@ input[type="file"] {
   box-sizing: border-box;
 }
 
-/* Custom styling for the "Choose Files" button inside the input */
+/* Custom styling for the folder picker trigger when the file input is visible */
 input[type="file"]::file-selector-button {
   background: var(--glass-strong);
   border: 1px solid var(--glass-border);
