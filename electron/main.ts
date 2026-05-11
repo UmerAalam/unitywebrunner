@@ -1,8 +1,12 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron') as any
 import { join, dirname } from 'path'
-import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs'
+import { existsSync, mkdirSync, writeFileSync, readFileSync, readdirSync, statSync } from 'fs'
 import { createServer, IncomingMessage, ServerResponse } from 'http'
 const log = require('electron-log') as any
+
+if (process.platform === 'linux') {
+  process.env.GTK_USE_PORTAL = '0'
+}
 
 log.transports.file.level = 'info'
 log.transports.console.level = 'info'
@@ -70,6 +74,22 @@ function detectCompressionFromFiles(fileNames: string[]) {
   }
 
   return 'none' as const
+}
+
+function collectRelativeFileNames(rootDir: string, currentDir = rootDir, acc: string[] = []) {
+  for (const entry of readdirSync(currentDir)) {
+    const fullPath = join(currentDir, entry)
+    const stats = statSync(fullPath)
+
+    if (stats.isDirectory()) {
+      collectRelativeFileNames(rootDir, fullPath, acc)
+      continue
+    }
+
+    acc.push(fullPath.slice(rootDir.length + 1).replace(/\\/g, '/'))
+  }
+
+  return acc
 }
 
 function createWindow() {
@@ -307,12 +327,38 @@ ipcMain.handle('set-compression', (_: any, type: string) => {
 })
 
 ipcMain.handle('select-folder', async () => {
-  const result = await dialog.showOpenDialog(mainWindow!, {
-    properties: ['openDirectory']
-  })
-  if (!result.canceled && result.filePaths.length > 0) {
-    ROOT_DIR = result.filePaths[0]
-    return { success: true, path: ROOT_DIR }
+  let selectedPath = ''
+
+  try {
+    const result = await dialog.showOpenDialog(mainWindow!, {
+      properties: ['openDirectory']
+    })
+    if (!result.canceled && result.filePaths.length > 0) {
+      selectedPath = result.filePaths[0]
+    }
+  } catch (error) {
+    log.error('Async open dialog failed:', error)
+  }
+
+  if (!selectedPath) {
+    const syncPaths = dialog.showOpenDialogSync(mainWindow!, {
+      properties: ['openDirectory']
+    })
+    if (syncPaths && syncPaths.length > 0) {
+      selectedPath = syncPaths[0]
+    }
+  }
+
+  if (selectedPath) {
+    ROOT_DIR = selectedPath
+    const fileNames = collectRelativeFileNames(ROOT_DIR)
+    COMPRESSION = detectCompressionFromFiles(fileNames)
+    log.info(`Build selected: ${ROOT_DIR} (${COMPRESSION})`)
+    mainWindow?.webContents.send('build-loaded', {
+      rootDir: ROOT_DIR,
+      compression: COMPRESSION,
+    })
+    return { success: true, path: ROOT_DIR, compression: COMPRESSION }
   }
   return { success: false }
 })
@@ -326,6 +372,38 @@ ipcMain.handle('select-files', async () => {
     return { success: true, paths: result.filePaths }
   }
   return { success: false }
+})
+
+ipcMain.handle('set-root-dir', (_: any, inputPath: string) => {
+  if (!inputPath || typeof inputPath !== 'string') {
+    return { success: false, error: 'Invalid path.' }
+  }
+
+  const trimmed = inputPath.trim()
+  if (!trimmed) {
+    return { success: false, error: 'Path is empty.' }
+  }
+
+  try {
+    const stats = statSync(trimmed)
+    if (!stats.isDirectory()) {
+      return { success: false, error: 'Path is not a directory.' }
+    }
+
+    ROOT_DIR = trimmed
+    const fileNames = collectRelativeFileNames(ROOT_DIR)
+    COMPRESSION = detectCompressionFromFiles(fileNames)
+    log.info(`Build path set: ${ROOT_DIR} (${COMPRESSION})`)
+    mainWindow?.webContents.send('build-loaded', {
+      rootDir: ROOT_DIR,
+      compression: COMPRESSION,
+    })
+
+    return { success: true, path: ROOT_DIR, compression: COMPRESSION }
+  } catch (error) {
+    log.error('Failed to set root dir:', error)
+    return { success: false, error: 'Path not accessible.' }
+  }
 })
 
 ipcMain.handle('get-game-url', () => {

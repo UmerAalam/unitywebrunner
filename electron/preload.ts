@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   setCompression: (type: string) => ipcRenderer.invoke('set-compression', type),
   selectFolder: () => ipcRenderer.invoke('select-folder'),
   selectFiles: () => ipcRenderer.invoke('select-files'),
+  setRootDir: (path: string) => ipcRenderer.invoke('set-root-dir', path),
   getGameUrl: () => ipcRenderer.invoke('get-game-url'),
   onServerStarted: (callback: (port: number) => void) => {
     ipcRenderer.on('server-started', (_: any, port: number) => callback(port))

@@ -10,11 +10,9 @@
     <div class="glass-panel">
       <main class="preview-area">
         <div id="canvas-container">
-          <iframe
-            id="gameFrame"
-            title="Engine Output"
-            src="about:blank"
-          ></iframe>
+          <div id="gameFrame" class="game-placeholder">
+            The game opens in a separate window after upload.
+          </div>
         </div>
         <div id="status">SYSTEM READY</div>
       </main>
@@ -27,18 +25,19 @@
         <div class="section">
           <h2>Build Source</h2>
           <div class="upload-wrapper">
-            <input
-              type="file"
-              id="files"
-              webkitdirectory
-              directory
-              multiple
-              hidden
-              onchange="upload()"
-            />
-            <button class="primary-btn" onclick="document.getElementById('files').click()">
+            <input type="file" id="files" webkitdirectory directory multiple hidden onchange="upload()" />
+            <button class="primary-btn" onclick="chooseFolder()">
               Choose Folder
             </button>
+          </div>
+          <div class="path-row">
+            <input
+              id="folderPath"
+              type="text"
+              placeholder="/absolute/path/to/UnityBuild"
+              class="path-input"
+            />
+            <button class="primary-btn" onclick="useFolderPath()">Use Path</button>
           </div>
         </div>
 
@@ -71,10 +70,20 @@
             <option value="brotli">Brotli</option>
           </select>
         </div>
+
+        <div class="site-link">
+          <a href="https://www.umeraalam.com" target="_blank" rel="noopener noreferrer">
+            Visit Site
+          </a>
+        </div>
       </aside>
     </div>
 
     <script>
+      let isSelectingFolder = false;
+      let isSettingPath = false;
+      let lastSetPath = "";
+
       function setResolution(width, height, element) {
         const container = document.getElementById("canvas-container");
         const status = document.getElementById("status");
@@ -112,13 +121,97 @@
             if (result.compression) {
               compression.value = result.compression;
             }
-            const frame = document.getElementById("gameFrame");
-            frame.src = `/?t=${Date.now()}`;
-            status.innerText = `ENGINE INITIALIZED | ${compression.value.toUpperCase()}`;
+            await openGameWindow();
+            status.innerText = `ENGINE INITIALIZED IN NEW WINDOW | ${compression.value.toUpperCase()}`;
           }
         } catch (error) {
           status.innerText = "CONNECTION FAILED";
           console.error("Upload Error:", error);
+        }
+      }
+
+      async function chooseFolder() {
+        if (isSelectingFolder) {
+          return;
+        }
+
+        const status = document.getElementById("status");
+        const compression = document.getElementById("compression");
+
+        if (!window.electronAPI || typeof window.electronAPI.selectFolder !== "function") {
+          status.innerText = "ELECTRON API UNAVAILABLE";
+          console.error("electronAPI.selectFolder is unavailable");
+          return;
+        }
+
+        status.innerText = "WAITING FOR FOLDER SELECTION...";
+        isSelectingFolder = true;
+        try {
+          const result = await window.electronAPI.selectFolder();
+          if (!result?.success) {
+            status.innerText = "FOLDER SELECTION CANCELLED";
+            return;
+          }
+
+          if (result.compression) {
+            compression.value = result.compression;
+          }
+          await openGameWindow();
+          status.innerText = `ENGINE INITIALIZED | ${compression.value.toUpperCase()}`;
+        } catch (error) {
+          status.innerText = "FOLDER PICKER FAILED";
+          console.error("Folder Picker Error:", error);
+        } finally {
+          isSelectingFolder = false;
+        }
+      }
+
+      async function useFolderPath() {
+        if (isSettingPath) {
+          return;
+        }
+
+        const status = document.getElementById("status");
+        const compression = document.getElementById("compression");
+        const folderPath = document.getElementById("folderPath").value;
+        const normalizedPath = folderPath.trim();
+
+        if (!normalizedPath) {
+          status.innerText = "INVALID PATH: PATH IS EMPTY";
+          return;
+        }
+
+        if (normalizedPath === lastSetPath) {
+          await openGameWindow();
+          status.innerText = `ENGINE INITIALIZED | ${compression.value.toUpperCase()}`;
+          return;
+        }
+
+        if (!window.electronAPI || typeof window.electronAPI.setRootDir !== "function") {
+          status.innerText = "ELECTRON API UNAVAILABLE";
+          return;
+        }
+
+        status.innerText = "VALIDATING BUILD PATH...";
+        isSettingPath = true;
+        try {
+          const result = await window.electronAPI.setRootDir(normalizedPath);
+          if (!result?.success) {
+            status.innerText = `INVALID PATH: ${(result && result.error) || "UNKNOWN ERROR"}`;
+            return;
+          }
+
+          if (result.compression) {
+            compression.value = result.compression;
+          }
+          lastSetPath = normalizedPath;
+          await openGameWindow();
+          status.innerText = `ENGINE INITIALIZED | ${compression.value.toUpperCase()}`;
+        } catch (error) {
+          status.innerText = "PATH LOAD FAILED";
+          console.error("Path Load Error:", error);
+        } finally {
+          isSettingPath = false;
         }
       }
 
@@ -128,11 +221,22 @@
         status.innerText = `CONFIGURING ${type.toUpperCase()}...`;
         try {
           await fetch(`/set-compression?type=${type}`);
-          const frame = document.getElementById("gameFrame");
-          frame.src = frame.src.split("?")[0] + `?t=${Date.now()}`;
           status.innerText = "ENGINE ACTIVE";
         } catch (error) {
           console.error("Compression Switch Error:", error);
+        }
+      }
+
+      async function openGameWindow() {
+        if (!window.electronAPI || typeof window.electronAPI.getGameUrl !== "function") {
+          throw new Error("Game URL API unavailable");
+        }
+
+        const gameUrl = await window.electronAPI.getGameUrl();
+        const win = window.open(`${gameUrl}?t=${Date.now()}`, "UnityWebRunnerGame");
+
+        if (!win) {
+          throw new Error("Unable to open game window");
         }
       }
     </script>

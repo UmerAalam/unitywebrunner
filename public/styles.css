@@ -110,18 +110,25 @@ body {
   /* Remove 100% width/height so it takes the literal pixels assigned by JS */
   flex-shrink: 0;
 }
+
+.game-placeholder {
+  width: 100%;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.62);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+}
 /* subtle hover lift */
 #canvas-container:hover {
   transform: translateY(-2px);
 }
 
-/* iframe */
-iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: block;
-}
 /* ===== BUTTONS ===== */
 button {
   background: var(--glass);
@@ -318,6 +325,33 @@ select option {
   gap: 8px;
 }
 
+.path-row {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.path-input {
+  flex: 1;
+  min-width: 140px;
+  width: 100%;
+  min-height: 42px;
+  font-size: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  box-sizing: border-box;
+}
+
+.path-row .primary-btn {
+  width: auto;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
 /* ===== RES GRID ===== */
 .res-grid {
   display: grid;
@@ -339,4 +373,34 @@ select option {
   flex-shrink: 0;
   width: 100%;
   box-sizing: border-box;
+}
+
+.site-link {
+  margin-top: auto;
+  padding: 12px 4px 4px;
+}
+
+.site-link a {
+  display: block;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+  color: #7dd3fc;
+  border: 1px solid rgba(125, 211, 252, 0.35);
+  background: rgba(125, 211, 252, 0.08);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.site-link a:hover {
+  color: #ffffff;
+  border-color: var(--accent);
+  background: rgba(0, 162, 255, 0.2);
+  box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.12);
 }
