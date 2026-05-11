@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron') as any
+const { app, BrowserWindow, ipcMain, dialog, Menu, shell } = require('electron') as any
 import { join, dirname } from 'path'
 import { existsSync, mkdirSync, writeFileSync, readFileSync, readdirSync, statSync } from 'fs'
 import { createServer, IncomingMessage, ServerResponse } from 'http'
@@ -96,6 +96,9 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    icon: join(__dirname, '..', 'public', 'unitywebrunner-icon.png'),
+    autoHideMenuBar: true,
+    frame: false,
     webPreferences: {
       preload: join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -109,6 +112,42 @@ function createWindow() {
     mainWindow?.show()
   })
 
+  mainWindow.webContents.setWindowOpenHandler(({ url }: { url: string }) => {
+    try {
+      const parsed = new URL(url)
+      const isLocalGameWindow =
+        (parsed.hostname === SERVER_HOST || parsed.hostname === 'localhost') &&
+        parsed.port === String(serverPort)
+
+      if (isLocalGameWindow) {
+        return { action: 'allow' }
+      }
+
+      shell.openExternal(url)
+      return { action: 'deny' }
+    } catch {
+      return { action: 'deny' }
+    }
+  })
+
+  mainWindow.webContents.on('will-navigate', (event: any, url: string) => {
+    try {
+      const parsed = new URL(url)
+      const isLocalDashboard =
+        (parsed.hostname === SERVER_HOST || parsed.hostname === 'localhost') &&
+        parsed.port === String(serverPort)
+
+      if (!isLocalDashboard) {
+        event.preventDefault()
+        shell.openExternal(url)
+      }
+    } catch {
+      event.preventDefault()
+    }
+  })
+
+  mainWindow.setMenuBarVisibility(false)
+  mainWindow.removeMenu()
   mainWindow.loadURL(`http://${SERVER_HOST}:${serverPort}/`)
 }
 
@@ -410,8 +449,33 @@ ipcMain.handle('get-game-url', () => {
   return `http://${SERVER_HOST}:${serverPort}/`
 })
 
+ipcMain.handle('window-minimize', () => {
+  mainWindow?.minimize()
+  return { success: true }
+})
+
+ipcMain.handle('window-maximize', () => {
+  if (!mainWindow) return { success: false }
+  if (mainWindow.isMaximized()) {
+    mainWindow.unmaximize()
+  } else {
+    mainWindow.maximize()
+  }
+  return { success: true, maximized: mainWindow.isMaximized() }
+})
+
+ipcMain.handle('window-close', () => {
+  mainWindow?.close()
+  return { success: true }
+})
+
+ipcMain.handle('window-is-maximized', () => {
+  return Boolean(mainWindow?.isMaximized())
+})
+
 app.whenReady().then(async () => {
   log.info('App starting...')
+  Menu.setApplicationMenu(null)
 
   try {
     await startServer()

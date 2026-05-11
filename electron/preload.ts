@@ -7,6 +7,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   selectFiles: () => ipcRenderer.invoke('select-files'),
   setRootDir: (path: string) => ipcRenderer.invoke('set-root-dir', path),
   getGameUrl: () => ipcRenderer.invoke('get-game-url'),
+  minimizeWindow: () => ipcRenderer.invoke('window-minimize'),
+  maximizeWindow: () => ipcRenderer.invoke('window-maximize'),
+  closeWindow: () => ipcRenderer.invoke('window-close'),
+  isWindowMaximized: () => ipcRenderer.invoke('window-is-maximized'),
   onServerStarted: (callback: (port: number) => void) => {
     ipcRenderer.on('server-started', (_: any, port: number) => callback(port))
   },

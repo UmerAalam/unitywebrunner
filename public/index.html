@@ -7,14 +7,30 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div class="titlebar">
+      <div class="titlebar-brand">UnityWebRunner</div>
+      <div class="titlebar-title">Engine Dashboard</div>
+      <div class="titlebar-actions">
+        <button class="win-btn" id="win-minimize" aria-label="Minimize">
+          <i data-lucide="minus"></i>
+        </button>
+        <button class="win-btn win-max" id="win-maximize" aria-label="Maximize">
+          <i data-lucide="square"></i>
+        </button>
+        <button class="win-btn win-close" id="win-close" aria-label="Close">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+    </div>
+
     <div class="glass-panel">
       <main class="preview-area">
         <div id="canvas-container">
           <div id="gameFrame" class="game-placeholder">
-            The game opens in a separate window after upload.
+            Upload a build to run the game in your selected launch mode.
           </div>
         </div>
-        <div id="status">The game opens in a separate window after upload.</div>
+        <div id="status">Upload a build to run the game in your selected launch mode.</div>
       </main>
 
       <aside class="controls">
@@ -59,11 +75,59 @@
           </div>
         </div>
 
+        <div class="section">
+          <h2>Theme</h2>
+          <div class="select-wrap">
+            <i data-lucide="palette"></i>
+            <select id="theme" onchange="updateTheme()">
+              <option value="github-theme">GitHub Theme</option>
+              <option value="one-dark-pro">One Dark Pro</option>
+              <option value="dracula-official">Dracula Official</option>
+              <option value="catppuccin">Catppuccin</option>
+              <option value="night-owl">Night Owl</option>
+              <option value="monokai-pro">Monokai Pro</option>
+              <option value="tokyo-night">Tokyo Night</option>
+              <option value="shades-of-purple">Shades of Purple</option>
+              <option value="ayu">Ayu</option>
+              <option value="nord">Nord</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Launch Mode</h2>
+          <div class="select-wrap">
+            <i data-lucide="layout-panel-top"></i>
+            <select id="launch-mode" onchange="updateLaunchMode()">
+              <option value="window">Separate Window</option>
+              <option value="insert">Embed Mode</option>
+            </select>
+          </div>
+        </div>
+
         <div class="site-link">
           <a href="https://www.umeraalam.com" target="_blank" rel="noopener noreferrer">
             <i data-lucide="globe"></i>
             Visit Site
           </a>
+          <div class="social-row">
+            <a class="social-btn" href="https://github.com/UmerAalam" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+              <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M12 .5A11.5 11.5 0 0 0 .5 12.1c0 5.1 3.3 9.3 7.9 10.9.6.1.8-.3.8-.6v-2.3c-3.2.7-3.8-1.4-3.8-1.4-.5-1.3-1.2-1.7-1.2-1.7-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 .1 1.8.8 2.1 1.6.9.6 2.3.4 2.9.2.1-.7.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.4-2.3 1.2-3.2-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2 1-.3 2-.5 3-.5s2 .2 3 .5c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.2 2.8.1 3.1.7.8 1.2 1.9 1.2 3.2 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.2.8 2.3v3.4c0 .3.2.7.8.6a11.6 11.6 0 0 0 7.9-10.9A11.5 11.5 0 0 0 12 .5Z"
+                />
+              </svg>
+            </a>
+            <a class="social-btn" href="https://instagram.com/umerrazzaq2022" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M7.8 1.5h8.4c3.5 0 6.3 2.8 6.3 6.3v8.4c0 3.5-2.8 6.3-6.3 6.3H7.8a6.3 6.3 0 0 1-6.3-6.3V7.8c0-3.5 2.8-6.3 6.3-6.3Zm0 2A4.3 4.3 0 0 0 3.5 7.8v8.4c0 2.4 1.9 4.3 4.3 4.3h8.4c2.4 0 4.3-1.9 4.3-4.3V7.8c0-2.4-1.9-4.3-4.3-4.3H7.8Zm9.1 1.5a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"
+                />
+              </svg>
+            </a>
+          </div>
         </div>
       </aside>
     </div>
@@ -76,14 +140,74 @@
       }
 
       let isSelectingFolder = false;
+      const THEME_STORAGE_KEY = "unitywebrunner-theme";
+      const LAUNCH_MODE_STORAGE_KEY = "unitywebrunner-launch-mode";
+
+      function getLaunchMode() {
+        const launchModeSelect = document.getElementById("launch-mode");
+        return launchModeSelect?.value === "insert" ? "insert" : "window";
+      }
+
+      function getIdleMessage() {
+        return getLaunchMode() === "insert"
+          ? "Upload a build to run the game in this dashboard."
+          : "Upload a build to launch the game window.";
+      }
 
       function setResolution() {
         const status = document.getElementById("status");
-        status.innerText = "The game opens in a separate window after upload.";
+        status.innerText = getIdleMessage();
+        const frame = document.getElementById("gameFrame");
+        if (frame && !frame.getAttribute("src")) {
+          frame.innerText = getIdleMessage();
+        }
       }
 
       function updateResolution() {
         setResolution();
+      }
+
+      function applyTheme(theme) {
+        document.body.setAttribute("data-theme", theme);
+      }
+
+      function updateTheme() {
+        const themeSelect = document.getElementById("theme");
+        const selectedTheme = themeSelect.value;
+        applyTheme(selectedTheme);
+        localStorage.setItem(THEME_STORAGE_KEY, selectedTheme);
+      }
+
+      function initTheme() {
+        const themeSelect = document.getElementById("theme");
+        const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+        const availableThemes = Array.from(themeSelect.options).map((opt) => opt.value);
+        const theme = availableThemes.includes(savedTheme) ? savedTheme : "github-theme";
+        themeSelect.value = theme;
+        applyTheme(theme);
+      }
+
+      function updateLaunchMode() {
+        const launchModeSelect = document.getElementById("launch-mode");
+        localStorage.setItem(LAUNCH_MODE_STORAGE_KEY, launchModeSelect.value);
+        setResolution();
+      }
+
+      function initLaunchMode() {
+        const launchModeSelect = document.getElementById("launch-mode");
+        const savedMode = localStorage.getItem(LAUNCH_MODE_STORAGE_KEY);
+        const launchMode = savedMode === "insert" ? "insert" : "window";
+        launchModeSelect.value = launchMode;
+      }
+
+      function initWindowControls() {
+        if (!window.electronAPI) return;
+        const minBtn = document.getElementById("win-minimize");
+        const maxBtn = document.getElementById("win-maximize");
+        const closeBtn = document.getElementById("win-close");
+        if (minBtn) minBtn.addEventListener("click", () => window.electronAPI.minimizeWindow?.());
+        if (maxBtn) maxBtn.addEventListener("click", () => window.electronAPI.maximizeWindow?.());
+        if (closeBtn) closeBtn.addEventListener("click", () => window.electronAPI.closeWindow?.());
       }
 
       async function upload() {
@@ -109,8 +233,8 @@
             if (result.compression) {
               compression.value = result.compression;
             }
-            await openGameWindow();
-            status.innerText = `ENGINE INITIALIZED IN NEW WINDOW | ${compression.value.toUpperCase()}`;
+            await launchGame();
+            status.innerText = `${status.innerText} | ${compression.value.toUpperCase()}`;
           }
         } catch (error) {
           status.innerText = "CONNECTION FAILED";
@@ -144,8 +268,8 @@
           if (result.compression) {
             compression.value = result.compression;
           }
-          await openGameWindow();
-          status.innerText = `ENGINE INITIALIZED | ${compression.value.toUpperCase()}`;
+          await launchGame();
+          status.innerText = `${status.innerText} | ${compression.value.toUpperCase()}`;
         } catch (error) {
           status.innerText = "FOLDER PICKER FAILED";
           console.error("Folder Picker Error:", error);
@@ -179,6 +303,37 @@
         }
       }
 
+      async function openGameInDashboard() {
+        const frame = document.getElementById("gameFrame");
+
+        if (frame.tagName.toLowerCase() !== "iframe") {
+          const iframe = document.createElement("iframe");
+          iframe.id = "gameFrame";
+          iframe.title = "Engine Output";
+          frame.replaceWith(iframe);
+        }
+
+        const gameFrame = document.getElementById("gameFrame");
+        gameFrame.setAttribute("src", `/?t=${Date.now()}`);
+      }
+
+      async function launchGame() {
+        const mode = getLaunchMode();
+        const status = document.getElementById("status");
+
+        if (mode === "insert") {
+          await openGameInDashboard();
+          status.innerText = "ENGINE INITIALIZED IN DASHBOARD";
+          return;
+        }
+
+        await openGameWindow();
+        status.innerText = "ENGINE INITIALIZED IN NEW WINDOW";
+      }
+
+      initTheme();
+      initLaunchMode();
+      initWindowControls();
       setResolution();
     </script>
   </body>
