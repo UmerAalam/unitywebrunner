@@ -808,3 +808,36 @@ select option:hover {
   display: block;
   overflow: visible;
 }
+
+.site-link {
+  margin-top: auto;
+  padding: 12px 4px 4px;
+}
+
+.site-link a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+  color: #7dd3fc;
+  border: 1px solid rgba(125, 211, 252, 0.35);
+  background: rgba(125, 211, 252, 0.08);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.site-link a:hover {
+  color: #ffffff;
+  border-color: var(--accent);
+  background: rgba(0, 162, 255, 0.2);
+  box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.12);
+}
