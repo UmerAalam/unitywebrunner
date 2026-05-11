@@ -7,14 +7,30 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div class="titlebar">
+      <div class="titlebar-brand">UnityWebRunner</div>
+      <div class="titlebar-title">Engine Dashboard</div>
+      <div class="titlebar-actions">
+        <button class="win-btn" id="win-minimize" aria-label="Minimize">
+          <i data-lucide="minus"></i>
+        </button>
+        <button class="win-btn win-max" id="win-maximize" aria-label="Maximize">
+          <i data-lucide="square"></i>
+        </button>
+        <button class="win-btn win-close" id="win-close" aria-label="Close">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+    </div>
+
     <div class="glass-panel">
       <main class="preview-area">
         <div id="canvas-container">
           <div id="gameFrame" class="game-placeholder">
-            The game opens in a separate window after upload.
+            Upload a build to launch the game window.
           </div>
         </div>
-        <div id="status">The game opens in a separate window after upload.</div>
+        <div id="status">Upload a build to launch the game window.</div>
       </main>
 
       <aside class="controls">
@@ -64,11 +80,16 @@
           <div class="select-wrap">
             <i data-lucide="palette"></i>
             <select id="theme" onchange="updateTheme()">
-              <option value="aurora">Aurora</option>
-              <option value="ember">Ember</option>
-              <option value="forest">Forest</option>
-              <option value="mono">Mono</option>
-              <option value="catppuccin-dark">Catppuccin Dark</option>
+              <option value="github-theme">GitHub Theme</option>
+              <option value="one-dark-pro">One Dark Pro</option>
+              <option value="dracula-official">Dracula Official</option>
+              <option value="catppuccin">Catppuccin</option>
+              <option value="night-owl">Night Owl</option>
+              <option value="monokai-pro">Monokai Pro</option>
+              <option value="tokyo-night">Tokyo Night</option>
+              <option value="shades-of-purple">Shades of Purple</option>
+              <option value="ayu">Ayu</option>
+              <option value="nord">Nord</option>
             </select>
           </div>
         </div>
@@ -112,7 +133,7 @@
 
       function setResolution() {
         const status = document.getElementById("status");
-        status.innerText = "The game opens in a separate window after upload.";
+        status.innerText = "Upload a build to launch the game window.";
       }
 
       function updateResolution() {
@@ -134,9 +155,19 @@
         const themeSelect = document.getElementById("theme");
         const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
         const availableThemes = Array.from(themeSelect.options).map((opt) => opt.value);
-        const theme = availableThemes.includes(savedTheme) ? savedTheme : "aurora";
+        const theme = availableThemes.includes(savedTheme) ? savedTheme : "github-theme";
         themeSelect.value = theme;
         applyTheme(theme);
+      }
+
+      function initWindowControls() {
+        if (!window.electronAPI) return;
+        const minBtn = document.getElementById("win-minimize");
+        const maxBtn = document.getElementById("win-maximize");
+        const closeBtn = document.getElementById("win-close");
+        if (minBtn) minBtn.addEventListener("click", () => window.electronAPI.minimizeWindow?.());
+        if (maxBtn) maxBtn.addEventListener("click", () => window.electronAPI.maximizeWindow?.());
+        if (closeBtn) closeBtn.addEventListener("click", () => window.electronAPI.closeWindow?.());
       }
 
       async function upload() {
@@ -233,6 +264,7 @@
       }
 
       initTheme();
+      initWindowControls();
       setResolution();
     </script>
   </body>
