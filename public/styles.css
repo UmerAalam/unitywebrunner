@@ -808,3 +808,34 @@ select option:hover {
   display: block;
   overflow: visible;
 }
+
+.made-by {
+  margin: 0;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.made-by .made-by-link {
+  display: inline;
+  width: auto;
+  margin-left: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--social-fg);
+  border-radius: 0;
+  font-size: inherit;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  box-shadow: none;
+}
+
+.made-by .made-by-link:hover {
+  color: #ffffff;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  text-decoration: underline;
+}

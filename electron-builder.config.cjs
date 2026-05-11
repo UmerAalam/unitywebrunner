@@ -85,7 +85,7 @@ function resolveElectronDist(prepareOptions) {
 
 module.exports = {
   appId: 'com.unitywebrunner.app',
-  productName: 'Unity WebRunner',
+  productName: 'UnityWebRunner',
   icon: 'public/unitywebrunner-icon.png',
   electronDist: resolveElectronDist,
   directories: {
@@ -99,7 +99,7 @@ module.exports = {
   asar: true,
   linux: {
     icon: 'public/unitywebrunner-icon.png',
-    target: ['dir'],
+    target: ['AppImage', 'dir'],
   },
   win: {
     icon: 'public/unitywebrunner-icon.png',

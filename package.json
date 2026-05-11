@@ -1,5 +1,5 @@
 {
-  "name": "unity-webrunner",
+  "name": "unitywebrunner",
   "version": "2.0.0",
   "description": "Electron app for running Unity WebGL builds locally",
   "main": "dist-electron/main.js",
@@ -9,12 +9,15 @@
     "prebuild": "npm run sync:icons",
     "predist": "npm run sync:icons",
     "predist:linux": "npm run sync:icons",
+    "predist:mac": "npm run sync:icons",
     "predist:win": "npm run sync:icons",
     "dev": "npm run build:electron && electron .",
     "build": "npm run build:electron",
     "build:electron": "tsc -p tsconfig.electron.json",
     "dist": "npm run build:electron && electron-builder --config electron-builder.config.cjs",
     "dist:linux": "npm run build:electron && electron-builder --linux --config electron-builder.config.cjs",
+    "dist:appimage": "npm run build:electron && electron-builder --linux AppImage --config electron-builder.config.cjs",
+    "dist:mac": "npm run build:electron && electron-builder --mac --config electron-builder.config.cjs",
     "dist:win": "npm run build:electron && electron-builder --win --config electron-builder.config.cjs"
   },
   "author": "",
