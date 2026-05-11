@@ -5,12 +5,90 @@
 
   --accent: #00a2ff;
   --accent-glow: rgba(0, 162, 255, 0.35);
+  --accent-soft: rgba(0, 162, 255, 0.12);
+  --select-option-bg: #0f172a;
+  --social-fg: #7dd3fc;
+  --social-bg: rgba(125, 211, 252, 0.08);
+  --social-border: rgba(125, 211, 252, 0.35);
+  --primary-hover: #0088cc;
 
   --bg-1: #0b1220;
   --bg-2: #020617;
 
   --radius-lg: 28px;
   --radius-md: 14px;
+}
+
+body[data-theme="aurora"] {
+  --accent: #00a2ff;
+  --accent-glow: rgba(0, 162, 255, 0.35);
+  --accent-soft: rgba(0, 162, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --select-option-bg: #0f172a;
+  --social-fg: #7dd3fc;
+  --social-bg: rgba(125, 211, 252, 0.08);
+  --social-border: rgba(125, 211, 252, 0.35);
+  --primary-hover: #0088cc;
+}
+
+body[data-theme="ember"] {
+  --accent: #ff6b35;
+  --accent-glow: rgba(255, 107, 53, 0.35);
+  --accent-soft: rgba(255, 107, 53, 0.15);
+  --glass-border: rgba(255, 190, 160, 0.22);
+  --select-option-bg: #2d1711;
+  --social-fg: #ffb69c;
+  --social-bg: rgba(255, 182, 156, 0.08);
+  --social-border: rgba(255, 182, 156, 0.35);
+  --primary-hover: #ff844f;
+}
+
+body[data-theme="forest"] {
+  --accent: #22c55e;
+  --accent-glow: rgba(34, 197, 94, 0.35);
+  --accent-soft: rgba(34, 197, 94, 0.14);
+  --glass-border: rgba(167, 243, 208, 0.22);
+  --select-option-bg: #0f241c;
+  --social-fg: #9be8bc;
+  --social-bg: rgba(155, 232, 188, 0.08);
+  --social-border: rgba(155, 232, 188, 0.35);
+  --primary-hover: #2ed66c;
+}
+
+body[data-theme="mono"] {
+  --accent: #94a3b8;
+  --accent-glow: rgba(148, 163, 184, 0.35);
+  --accent-soft: rgba(148, 163, 184, 0.14);
+  --glass-border: rgba(203, 213, 225, 0.2);
+  --select-option-bg: #1b2433;
+  --social-fg: #cbd5e1;
+  --social-bg: rgba(203, 213, 225, 0.08);
+  --social-border: rgba(203, 213, 225, 0.32);
+  --primary-hover: #a6b4c7;
+}
+
+body[data-theme="dark"] {
+  --accent: #60a5fa;
+  --accent-glow: rgba(96, 165, 250, 0.35);
+  --accent-soft: rgba(96, 165, 250, 0.14);
+  --glass-border: rgba(148, 163, 184, 0.24);
+  --select-option-bg: #141b28;
+  --social-fg: #cbd5e1;
+  --social-bg: rgba(203, 213, 225, 0.08);
+  --social-border: rgba(203, 213, 225, 0.32);
+  --primary-hover: #79b5ff;
+}
+
+body[data-theme="catppuccin-dark"] {
+  --accent: #cba6f7;
+  --accent-glow: rgba(203, 166, 247, 0.35);
+  --accent-soft: rgba(203, 166, 247, 0.15);
+  --glass-border: rgba(186, 194, 222, 0.24);
+  --select-option-bg: #1f2030;
+  --social-fg: #f5c2e7;
+  --social-bg: rgba(245, 194, 231, 0.09);
+  --social-border: rgba(245, 194, 231, 0.35);
+  --primary-hover: #d5b6fa;
 }
 
 /* ===== BASE ===== */
@@ -37,6 +115,51 @@ body {
   box-sizing: border-box;
 }
 
+body[data-theme="ember"] {
+  background: radial-gradient(
+    circle at top,
+    #3a1f1a 0%,
+    #1f120f 42%,
+    #140b09 100%
+  );
+}
+
+body[data-theme="forest"] {
+  background: radial-gradient(
+    circle at top,
+    #16392e 0%,
+    #0d221c 42%,
+    #081410 100%
+  );
+}
+
+body[data-theme="mono"] {
+  background: radial-gradient(
+    circle at top,
+    #2f3442 0%,
+    #1c212c 42%,
+    #11151e 100%
+  );
+}
+
+body[data-theme="dark"] {
+  background: radial-gradient(
+    circle at top,
+    #1b2433 0%,
+    #0f1726 42%,
+    #090f1a 100%
+  );
+}
+
+body[data-theme="catppuccin-dark"] {
+  background: radial-gradient(
+    circle at top,
+    #313244 0%,
+    #1e1e2e 42%,
+    #181825 100%
+  );
+}
+
 /* ===== MAIN GLASS PANEL ===== */
 .glass-panel {
   display: grid;
@@ -56,11 +179,7 @@ body {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(
-    circle at top left,
-    rgba(0, 162, 255, 0.12),
-    transparent 60%
-  );
+  background: radial-gradient(circle at top left, var(--accent-soft), transparent 60%);
   pointer-events: none;
 }
 
@@ -162,7 +281,7 @@ button {
 button:hover {
   background: var(--glass-strong);
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.12);
+  box-shadow: 0 0 0 3px var(--accent-soft);
   transform: translateY(-1px);
 }
 
@@ -190,7 +309,7 @@ button:active {
 }
 
 .primary-btn:hover {
-  background: #0088cc;
+  background: var(--primary-hover);
   border-color: white;
   box-shadow:
     0 0 0 3px var(--accent-glow),
@@ -215,7 +334,7 @@ button:active {
 }
 
 .section:hover {
-  border-color: rgba(0, 162, 255, 0.3);
+  border-color: var(--accent);
 }
 
 .section h2 {
@@ -257,7 +376,7 @@ input[type="file"]::file-selector-button {
 
 input[type="file"]:hover {
   border-color: var(--accent);
-  background: rgba(0, 162, 255, 0.05);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
 }
 
 input[type="file"]:hover::file-selector-button {
@@ -289,7 +408,7 @@ select {
 select:hover {
   border-color: var(--accent);
   background-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 15px rgba(0, 162, 255, 0.1);
+  box-shadow: 0 0 15px var(--accent-soft);
 }
 
 select:focus {
@@ -299,9 +418,15 @@ select:focus {
 
 /* Style for the options inside (Note: standard HTML selects have limited styling for options) */
 select option {
-  background-color: #0f172a; /* Dark background for dropdown menu */
+  background-color: var(--select-option-bg); /* Dark background for dropdown menu */
   color: white;
   padding: 10px;
+}
+
+select option:checked,
+select option:hover {
+  background: var(--accent);
+  color: #ffffff;
 }
 
 /* ===== HEADER ===== */
@@ -388,9 +513,9 @@ select option {
   width: 100%;
   text-align: center;
   text-decoration: none;
-  color: #7dd3fc;
-  border: 1px solid rgba(125, 211, 252, 0.35);
-  background: rgba(125, 211, 252, 0.08);
+  color: var(--social-fg);
+  border: 1px solid var(--social-border);
+  background: var(--social-bg);
   border-radius: 10px;
   padding: 10px 12px;
   font-size: 12px;
@@ -404,6 +529,33 @@ select option {
 .site-link a:hover {
   color: #ffffff;
   border-color: var(--accent);
-  background: rgba(0, 162, 255, 0.2);
-  box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.12);
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.site-link .social-row {
+  display: flex;
+  gap: 8px;
+}
+
+.site-link .social-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(50% - 4px);
+  height: 42px;
+  padding: 0;
+  overflow: visible;
+  line-height: 1;
+  font-size: 0;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.site-link .social-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  display: block;
+  overflow: visible;
 }
