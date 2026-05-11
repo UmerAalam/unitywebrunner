@@ -110,18 +110,25 @@ body {
   /* Remove 100% width/height so it takes the literal pixels assigned by JS */
   flex-shrink: 0;
 }
+
+.game-placeholder {
+  width: 100%;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.62);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+}
 /* subtle hover lift */
 #canvas-container:hover {
   transform: translateY(-2px);
 }
 
-/* iframe */
-iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: block;
-}
 /* ===== BUTTONS ===== */
 button {
   background: var(--glass);
@@ -139,6 +146,17 @@ button {
 
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.lucide {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+  flex: 0 0 auto;
 }
 
 button:hover {
@@ -224,7 +242,7 @@ input[type="file"] {
   box-sizing: border-box;
 }
 
-/* Custom styling for the "Choose Files" button inside the input */
+/* Custom styling for the folder picker trigger when the file input is visible */
 input[type="file"]::file-selector-button {
   background: var(--glass-strong);
   border: 1px solid var(--glass-border);
@@ -250,7 +268,7 @@ input[type="file"]:hover::file-selector-button {
 /* ===== SELECT DROPDOWN ===== */
 select {
   width: 100%;
-  padding: 8px 12px;
+  padding: 8px 12px 8px 34px;
   appearance: none; /* Removes default browser arrow */
   background-color: rgba(255, 255, 255, 0.05);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
@@ -325,6 +343,19 @@ select option {
   gap: 8px;
 }
 
+.select-wrap {
+  position: relative;
+}
+
+.select-wrap .lucide {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.8;
+  pointer-events: none;
+}
+
 /* ===== STATUS ELEMENT ===== */
 #status {
   padding: 8px 12px;
@@ -339,4 +370,37 @@ select option {
   flex-shrink: 0;
   width: 100%;
   box-sizing: border-box;
+}
+
+.site-link {
+  margin-top: auto;
+  padding: 12px 4px 4px;
+}
+
+.site-link a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+  color: #7dd3fc;
+  border: 1px solid rgba(125, 211, 252, 0.35);
+  background: rgba(125, 211, 252, 0.08);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.site-link a:hover {
+  color: #ffffff;
+  border-color: var(--accent);
+  background: rgba(0, 162, 255, 0.2);
+  box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.12);
 }

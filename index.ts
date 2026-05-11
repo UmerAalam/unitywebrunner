@@ -1,9 +1,10 @@
 import { serve } from "bun";
 import { join, dirname } from "path";
-import { mkdirSync, existsSync } from "fs";
+import { mkdirSync } from "fs";
 
 let ROOT_DIR = "";
 let COMPRESSION: "none" | "gzip" | "brotli" = "none";
+const REQUESTED_PORT = process.env.PORT ? Number(process.env.PORT) : undefined;
 
 const MIME_TYPES: Record<string, string> = {
   ".html": "text/html",
@@ -17,9 +18,67 @@ const MIME_TYPES: Record<string, string> = {
   ".ico": "image/x-icon",
 };
 
-serve({
-  port: 8000,
-  async fetch(req) {
+async function resolveUnityAssetPath(
+  rootDir: string,
+  cleanPath: string,
+  compression: "none" | "gzip" | "brotli",
+) {
+  const compressionSuffix =
+    compression === "brotli" ? ".br" : compression === "gzip" ? ".gz" : "";
+  const logicalPath = cleanPath.replace(/\.(br|gz)$/i, "");
+  const exactPath = join(rootDir, cleanPath);
+  const logicalFilePath = join(rootDir, logicalPath);
+  const compressedPath =
+    compressionSuffix && !cleanPath.toLowerCase().endsWith(compressionSuffix)
+      ? join(rootDir, `${cleanPath}${compressionSuffix}`)
+      : null;
+
+  const candidates = [exactPath];
+  if (compressedPath) {
+    candidates.push(compressedPath);
+  }
+  if (logicalFilePath !== exactPath) {
+    candidates.push(logicalFilePath);
+  }
+
+  for (const candidate of candidates) {
+    if (await Bun.file(candidate).exists()) {
+      const encoding = candidate.endsWith(".br")
+        ? "br"
+        : candidate.endsWith(".gz")
+          ? "gzip"
+          : undefined;
+
+      return {
+        filePath: candidate,
+        logicalPath,
+        encoding,
+      };
+    }
+  }
+
+  return {
+    filePath: exactPath,
+    logicalPath,
+    encoding: undefined,
+  };
+}
+
+function detectCompressionFromFiles(fileNames: string[]) {
+  const normalized = fileNames.map((name) => name.toLowerCase());
+
+  if (normalized.some((name) => name.endsWith(".br"))) {
+    return "brotli" as const;
+  }
+
+  if (normalized.some((name) => name.endsWith(".gz"))) {
+    return "gzip" as const;
+  }
+
+  return "none" as const;
+}
+
+const handler = async (req: Request) => {
     const url = new URL(req.url);
 
     // 1. UPLOAD HANDLER (With Path Flattening)
@@ -28,6 +87,11 @@ serve({
       const files = formData.getAll("files");
       const buildFolder = `build_${Date.now()}`;
       const uploadBase = join(process.cwd(), "uploads", buildFolder);
+      COMPRESSION = detectCompressionFromFiles(
+        files
+          .filter((entry): entry is File => entry instanceof File)
+          .map((entry) => entry.name),
+      );
 
       for (const entry of files) {
         if (entry instanceof File) {
@@ -45,8 +109,8 @@ serve({
       }
 
       ROOT_DIR = uploadBase;
-      console.log(`✅ Build Flattened & Ready: ${ROOT_DIR}`);
-      return Response.json({ success: true });
+      console.log(`✅ Build Flattened & Ready: ${ROOT_DIR} (${COMPRESSION})`);
+      return Response.json({ success: true, compression: COMPRESSION });
     }
 
     // 2. CONFIG HANDLER
@@ -82,12 +146,17 @@ serve({
 
     const cleanPath =
       url.pathname === "/" ? "index.html" : url.pathname.replace(/^\//, "");
-    const finalFilePath = join(ROOT_DIR, cleanPath);
+    const { filePath: finalFilePath, logicalPath, encoding } =
+      await resolveUnityAssetPath(
+      ROOT_DIR,
+      cleanPath,
+      COMPRESSION,
+    );
     const file = Bun.file(finalFilePath);
 
     if (await file.exists()) {
       const headers = new Headers();
-      const ext = "." + cleanPath.split(".").pop()?.toLowerCase();
+      const ext = "." + logicalPath.split(".").pop()?.toLowerCase();
 
       headers.set(
         "Content-Type",
@@ -95,8 +164,7 @@ serve({
       );
 
       // Handle Unity Compression
-      if (COMPRESSION === "gzip") headers.set("Content-Encoding", "gzip");
-      if (COMPRESSION === "brotli") headers.set("Content-Encoding", "br");
+      if (encoding) headers.set("Content-Encoding", encoding);
 
       // SharedArrayBuffer / Isolation headers (Required for Unity WebGL)
       headers.set("Cross-Origin-Embedder-Policy", "require-corp");
@@ -106,7 +174,46 @@ serve({
     }
 
     return new Response(`404: File not found at ${cleanPath}`, { status: 404 });
-  },
-});
+};
 
-console.log("🚀 Liquid Studio running at http://localhost:8000");
+function start() {
+  const attemptedPorts = new Set<number>();
+  const candidatePorts: number[] = [];
+
+  if (REQUESTED_PORT !== undefined) {
+    candidatePorts.push(REQUESTED_PORT);
+  }
+
+  while (candidatePorts.length < 20) {
+    const port = 20000 + Math.floor(Math.random() * 40000);
+    if (!attemptedPorts.has(port)) {
+      attemptedPorts.add(port);
+      candidatePorts.push(port);
+    }
+  }
+
+  for (const port of candidatePorts) {
+    try {
+      const server = serve({
+        port,
+        fetch: handler,
+      });
+
+      console.log(`Unity WebRunner running at http://localhost:${server.port ?? port}`);
+      return;
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        (error as { code?: string }).code === "EADDRINUSE"
+      ) {
+        continue;
+      }
+
+      throw error;
+    }
+  }
+
+  throw new Error("No available port found for Unity WebRunner");
+}
+
+start();
