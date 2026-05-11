@@ -14,7 +14,7 @@
             The game opens in a separate window after upload.
           </div>
         </div>
-        <div id="status">SYSTEM READY</div>
+        <div id="status">The game opens in a separate window after upload.</div>
       </main>
 
       <aside class="controls">
@@ -35,30 +35,15 @@
 
         <div class="section">
           <h2>Resolution (16:9)</h2>
-          <div class="res-grid">
-            <button class="res-btn" onclick="setResolution(854, 480, this)">
-              <i data-lucide="monitor"></i>
-              480p
-            </button>
-            <button
-              class="res-btn active"
-              onclick="setResolution(1280, 720, this)"
-            >
-              <i data-lucide="monitor"></i>
-              720p
-            </button>
-            <button class="res-btn" onclick="setResolution(1920, 1080, this)">
-              <i data-lucide="monitor"></i>
-              1080p
-            </button>
-            <button class="res-btn" onclick="setResolution(2560, 1440, this)">
-              <i data-lucide="monitor"></i>
-              1440p
-            </button>
-            <button class="res-btn" onclick="setResolution(3840, 2160, this)">
-              <i data-lucide="monitor"></i>
-              4K
-            </button>
+          <div class="select-wrap">
+            <i data-lucide="monitor"></i>
+            <select id="resolution" onchange="updateResolution()">
+              <option value="854x480">480p</option>
+              <option value="1280x720" selected>720p</option>
+              <option value="1920x1080">1080p</option>
+              <option value="2560x1440">1440p</option>
+              <option value="3840x2160">4K</option>
+            </select>
           </div>
         </div>
 
@@ -83,7 +68,7 @@
       </aside>
     </div>
 
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="vendor/lucide.js"></script>
 
     <script>
       if (window.lucide && typeof window.lucide.createIcons === "function") {
@@ -92,18 +77,13 @@
 
       let isSelectingFolder = false;
 
-      function setResolution(width, height, element) {
-        const container = document.getElementById("canvas-container");
+      function setResolution() {
         const status = document.getElementById("status");
-        document
-          .querySelectorAll(".res-btn")
-          .forEach((btn) => btn.classList.remove("active"));
-        element.classList.add("active");
-        container.style.maxWidth = `${width}px`;
-        status.innerText = `ENGINE ACTIVE | ${width}x${height}`;
-        const frame = document.getElementById("gameFrame");
-        frame.style.width = `${width}px`;
-        frame.style.height = `${height}px`;
+        status.innerText = "The game opens in a separate window after upload.";
+      }
+
+      function updateResolution() {
+        setResolution();
       }
 
       async function upload() {
@@ -145,10 +125,10 @@
 
         const status = document.getElementById("status");
         const compression = document.getElementById("compression");
+        const fileInput = document.getElementById("files");
 
         if (!window.electronAPI || typeof window.electronAPI.selectFolder !== "function") {
-          status.innerText = "ELECTRON API UNAVAILABLE";
-          console.error("electronAPI.selectFolder is unavailable");
+          fileInput.click();
           return;
         }
 
@@ -198,6 +178,8 @@
           throw new Error("Unable to open game window");
         }
       }
+
+      setResolution();
     </script>
   </body>
 </html>

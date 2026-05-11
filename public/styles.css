@@ -152,7 +152,7 @@ button {
   gap: 8px;
 }
 
-i[data-lucide] {
+.lucide {
   width: 14px;
   height: 14px;
   stroke-width: 2;
@@ -347,7 +347,7 @@ select option {
   position: relative;
 }
 
-.select-wrap i[data-lucide] {
+.select-wrap .lucide {
   position: absolute;
   left: 10px;
   top: 50%;
