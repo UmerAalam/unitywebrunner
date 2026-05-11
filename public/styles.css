@@ -2,6 +2,10 @@
   --glass: rgba(255, 255, 255, 0.06);
   --glass-strong: rgba(255, 255, 255, 0.1);
   --glass-border: rgba(255, 255, 255, 0.12);
+  --panel-bg: rgba(9, 16, 28, 0.52);
+  --surface-bg: rgba(255, 255, 255, 0.04);
+  --surface-strong: rgba(255, 255, 255, 0.08);
+  --status-bg: rgba(0, 162, 255, 0.12);
 
   --accent: #00a2ff;
   --accent-glow: rgba(0, 162, 255, 0.35);
@@ -29,6 +33,10 @@ body[data-theme="github-theme"] {
   --social-bg: rgba(88, 166, 255, 0.08);
   --social-border: rgba(88, 166, 255, 0.32);
   --primary-hover: #70b3ff;
+  --panel-bg: rgba(13, 19, 31, 0.55);
+  --surface-bg: rgba(139, 148, 158, 0.07);
+  --surface-strong: rgba(139, 148, 158, 0.12);
+  --status-bg: rgba(88, 166, 255, 0.14);
 }
 
 body[data-theme="one-dark-pro"] {
@@ -41,6 +49,10 @@ body[data-theme="one-dark-pro"] {
   --social-bg: rgba(97, 175, 239, 0.08);
   --social-border: rgba(97, 175, 239, 0.32);
   --primary-hover: #79beff;
+  --panel-bg: rgba(18, 24, 34, 0.56);
+  --surface-bg: rgba(171, 178, 191, 0.07);
+  --surface-strong: rgba(171, 178, 191, 0.12);
+  --status-bg: rgba(97, 175, 239, 0.15);
 }
 
 body[data-theme="dracula-official"] {
@@ -53,6 +65,10 @@ body[data-theme="dracula-official"] {
   --social-bg: rgba(189, 147, 249, 0.09);
   --social-border: rgba(189, 147, 249, 0.35);
   --primary-hover: #c9a6ff;
+  --panel-bg: rgba(25, 24, 38, 0.58);
+  --surface-bg: rgba(189, 147, 249, 0.08);
+  --surface-strong: rgba(189, 147, 249, 0.14);
+  --status-bg: rgba(189, 147, 249, 0.16);
 }
 
 body[data-theme="catppuccin"] {
@@ -65,6 +81,10 @@ body[data-theme="catppuccin"] {
   --social-bg: rgba(245, 194, 231, 0.09);
   --social-border: rgba(245, 194, 231, 0.35);
   --primary-hover: #d5b6fa;
+  --panel-bg: rgba(24, 24, 37, 0.58);
+  --surface-bg: rgba(186, 194, 222, 0.08);
+  --surface-strong: rgba(186, 194, 222, 0.13);
+  --status-bg: rgba(203, 166, 247, 0.15);
 }
 
 body[data-theme="night-owl"] {
@@ -77,6 +97,10 @@ body[data-theme="night-owl"] {
   --social-bg: rgba(130, 170, 255, 0.08);
   --social-border: rgba(130, 170, 255, 0.34);
   --primary-hover: #9abaff;
+  --panel-bg: rgba(8, 28, 48, 0.58);
+  --surface-bg: rgba(130, 170, 255, 0.08);
+  --surface-strong: rgba(130, 170, 255, 0.13);
+  --status-bg: rgba(130, 170, 255, 0.15);
 }
 
 body[data-theme="monokai-pro"] {
@@ -89,6 +113,10 @@ body[data-theme="monokai-pro"] {
   --social-bg: rgba(255, 216, 102, 0.08);
   --social-border: rgba(255, 216, 102, 0.32);
   --primary-hover: #ffe084;
+  --panel-bg: rgba(33, 31, 29, 0.58);
+  --surface-bg: rgba(255, 216, 102, 0.08);
+  --surface-strong: rgba(255, 216, 102, 0.13);
+  --status-bg: rgba(255, 216, 102, 0.14);
 }
 
 body[data-theme="tokyo-night"] {
@@ -101,6 +129,10 @@ body[data-theme="tokyo-night"] {
   --social-bg: rgba(122, 162, 247, 0.08);
   --social-border: rgba(122, 162, 247, 0.34);
   --primary-hover: #96b7ff;
+  --panel-bg: rgba(21, 27, 45, 0.58);
+  --surface-bg: rgba(122, 162, 247, 0.08);
+  --surface-strong: rgba(122, 162, 247, 0.13);
+  --status-bg: rgba(122, 162, 247, 0.15);
 }
 
 body[data-theme="shades-of-purple"] {
@@ -113,6 +145,10 @@ body[data-theme="shades-of-purple"] {
   --social-bg: rgba(199, 146, 234, 0.09);
   --social-border: rgba(199, 146, 234, 0.36);
   --primary-hover: #d5aef2;
+  --panel-bg: rgba(25, 12, 42, 0.58);
+  --surface-bg: rgba(199, 146, 234, 0.08);
+  --surface-strong: rgba(199, 146, 234, 0.13);
+  --status-bg: rgba(199, 146, 234, 0.15);
 }
 
 body[data-theme="ayu"] {
@@ -125,6 +161,10 @@ body[data-theme="ayu"] {
   --social-bg: rgba(255, 180, 84, 0.08);
   --social-border: rgba(255, 180, 84, 0.34);
   --primary-hover: #ffc26f;
+  --panel-bg: rgba(28, 38, 51, 0.58);
+  --surface-bg: rgba(255, 180, 84, 0.08);
+  --surface-strong: rgba(255, 180, 84, 0.13);
+  --status-bg: rgba(255, 180, 84, 0.15);
 }
 
 body[data-theme="nord"] {
@@ -137,6 +177,10 @@ body[data-theme="nord"] {
   --social-bg: rgba(136, 192, 208, 0.08);
   --social-border: rgba(136, 192, 208, 0.34);
   --primary-hover: #9bcddd;
+  --panel-bg: rgba(32, 42, 60, 0.58);
+  --surface-bg: rgba(136, 192, 208, 0.08);
+  --surface-strong: rgba(136, 192, 208, 0.13);
+  --status-bg: rgba(136, 192, 208, 0.15);
 }
 
 /* ===== BASE ===== */
@@ -249,13 +293,18 @@ body[data-theme="nord"] {
 .glass-panel {
   display: grid;
   /* Let preview fill available space, fixed sidebar width */
-  grid-template-columns: 1fr 280px;
-  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 0;
   overflow: hidden;
   position: relative;
   width: 100%;
   height: calc(100% - 8px);
   max-height: 100vh;
+  background: var(--panel-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  backdrop-filter: blur(16px) saturate(130%);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
 }
 
 .titlebar {
@@ -350,15 +399,16 @@ body[data-theme="nord"] {
 
 /* ===== CONTROLS ===== */
 .controls {
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
-  padding-left: 16px;
-  padding-right: 8px;
+  border-left: 1px solid var(--glass-border);
+  padding: 10px 12px 12px 20px;
   overflow-y: auto;
   height: 100%;
   min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  background: color-mix(in srgb, var(--panel-bg) 86%, #05070c 14%);
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.04);
 }
 
 .preview-area {
@@ -371,14 +421,15 @@ body[data-theme="nord"] {
   overflow: hidden; /* Important: clips any iframe overflow */
   min-height: 0;
   gap: 12px;
-  padding: 0;
+  padding: 0 14px 0 0;
+  box-sizing: border-box;
 }
 
 #canvas-container {
   display: flex;
   justify-content: center; /* Centers the game if resolution is smaller than window */
   align-items: center;
-  background: #000;
+  background: linear-gradient(135deg, #121317 0%, #0c0d11 55%, #08090d 100%);
   border-radius: 12px;
   border: 1px solid var(--glass-border);
   overflow: auto; /* Allows scrollbars if resolution exceeds window size */
@@ -395,10 +446,16 @@ body[data-theme="nord"] {
   flex-shrink: 0;
 }
 
+iframe#gameFrame {
+  width: 100%;
+  height: 100%;
+}
+
 .game-placeholder {
   width: 100%;
   height: 100%;
-  color: rgba(255, 255, 255, 0.62);
+  color: rgba(255, 255, 255, 0.72);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -488,11 +545,11 @@ button:active {
 }
 /* ===== SECTION CONTAINERS ===== */
 .section {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-bg);
   border: 1px solid var(--glass-border);
   padding: 12px;
   border-radius: 12px;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(14px) saturate(120%);
   margin-bottom: 4px;
   transition: border-color 0.3s ease;
   flex-shrink: 0;
@@ -554,7 +611,7 @@ select {
   width: 100%;
   padding: 8px 12px 8px 34px;
   appearance: none; /* Removes default browser arrow */
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--surface-strong);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 8px center;
@@ -572,7 +629,7 @@ select {
 
 select:hover {
   border-color: var(--accent);
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: color-mix(in srgb, var(--surface-strong) 72%, var(--accent) 28%);
   box-shadow: 0 0 15px var(--accent-soft);
 }
 
@@ -586,18 +643,23 @@ select option {
   background-color: var(--select-option-bg); /* Dark background for dropdown menu */
   color: white;
   padding: 10px;
+  border-radius: 8px;
+  outline: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
 select option:checked,
 select option:hover {
-  background: var(--accent);
+  background: color-mix(in srgb, var(--accent) 28%, var(--select-option-bg) 72%);
   color: #ffffff;
+  outline: 1px solid var(--accent);
 }
 
 /* ===== HEADER ===== */
 .controls header {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  padding-top: 2px;
   padding-bottom: 12px;
+  padding-right: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   flex-shrink: 0;
 }
@@ -607,6 +669,8 @@ select option:hover {
   font-size: 1.4rem;
   font-weight: 600;
   letter-spacing: -0.5px;
+  line-height: 1.15;
+  padding-right: 4px;
 }
 
 .controls header h1 span {
@@ -649,17 +713,18 @@ select option:hover {
 /* ===== STATUS ELEMENT ===== */
 #status {
   padding: 8px 12px;
-  background: rgba(0, 162, 255, 0.1);
+  background: var(--status-bg);
   border: 1px solid var(--accent);
   border-radius: 8px;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 1px;
   text-align: center;
-  color: var(--accent);
+  color: color-mix(in srgb, var(--accent) 84%, white 16%);
   flex-shrink: 0;
   width: 100%;
   box-sizing: border-box;
+  margin-right: 0;
 }
 
 .site-link {

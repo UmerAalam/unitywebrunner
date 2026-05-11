@@ -27,10 +27,10 @@
       <main class="preview-area">
         <div id="canvas-container">
           <div id="gameFrame" class="game-placeholder">
-            Upload a build to launch the game window.
+            Upload a build to run the game in your selected launch mode.
           </div>
         </div>
-        <div id="status">Upload a build to launch the game window.</div>
+        <div id="status">Upload a build to run the game in your selected launch mode.</div>
       </main>
 
       <aside class="controls">
@@ -94,6 +94,17 @@
           </div>
         </div>
 
+        <div class="section">
+          <h2>Launch Mode</h2>
+          <div class="select-wrap">
+            <i data-lucide="layout-panel-top"></i>
+            <select id="launch-mode" onchange="updateLaunchMode()">
+              <option value="window">Separate Window</option>
+              <option value="insert">Embed Mode</option>
+            </select>
+          </div>
+        </div>
+
         <div class="site-link">
           <a href="https://www.umeraalam.com" target="_blank" rel="noopener noreferrer">
             <i data-lucide="globe"></i>
@@ -130,10 +141,26 @@
 
       let isSelectingFolder = false;
       const THEME_STORAGE_KEY = "unitywebrunner-theme";
+      const LAUNCH_MODE_STORAGE_KEY = "unitywebrunner-launch-mode";
+
+      function getLaunchMode() {
+        const launchModeSelect = document.getElementById("launch-mode");
+        return launchModeSelect?.value === "insert" ? "insert" : "window";
+      }
+
+      function getIdleMessage() {
+        return getLaunchMode() === "insert"
+          ? "Upload a build to run the game in this dashboard."
+          : "Upload a build to launch the game window.";
+      }
 
       function setResolution() {
         const status = document.getElementById("status");
-        status.innerText = "Upload a build to launch the game window.";
+        status.innerText = getIdleMessage();
+        const frame = document.getElementById("gameFrame");
+        if (frame && !frame.getAttribute("src")) {
+          frame.innerText = getIdleMessage();
+        }
       }
 
       function updateResolution() {
@@ -158,6 +185,19 @@
         const theme = availableThemes.includes(savedTheme) ? savedTheme : "github-theme";
         themeSelect.value = theme;
         applyTheme(theme);
+      }
+
+      function updateLaunchMode() {
+        const launchModeSelect = document.getElementById("launch-mode");
+        localStorage.setItem(LAUNCH_MODE_STORAGE_KEY, launchModeSelect.value);
+        setResolution();
+      }
+
+      function initLaunchMode() {
+        const launchModeSelect = document.getElementById("launch-mode");
+        const savedMode = localStorage.getItem(LAUNCH_MODE_STORAGE_KEY);
+        const launchMode = savedMode === "insert" ? "insert" : "window";
+        launchModeSelect.value = launchMode;
       }
 
       function initWindowControls() {
@@ -193,8 +233,8 @@
             if (result.compression) {
               compression.value = result.compression;
             }
-            await openGameWindow();
-            status.innerText = `ENGINE INITIALIZED IN NEW WINDOW | ${compression.value.toUpperCase()}`;
+            await launchGame();
+            status.innerText = `${status.innerText} | ${compression.value.toUpperCase()}`;
           }
         } catch (error) {
           status.innerText = "CONNECTION FAILED";
@@ -228,8 +268,8 @@
           if (result.compression) {
             compression.value = result.compression;
           }
-          await openGameWindow();
-          status.innerText = `ENGINE INITIALIZED | ${compression.value.toUpperCase()}`;
+          await launchGame();
+          status.innerText = `${status.innerText} | ${compression.value.toUpperCase()}`;
         } catch (error) {
           status.innerText = "FOLDER PICKER FAILED";
           console.error("Folder Picker Error:", error);
@@ -263,7 +303,36 @@
         }
       }
 
+      async function openGameInDashboard() {
+        const frame = document.getElementById("gameFrame");
+
+        if (frame.tagName.toLowerCase() !== "iframe") {
+          const iframe = document.createElement("iframe");
+          iframe.id = "gameFrame";
+          iframe.title = "Engine Output";
+          frame.replaceWith(iframe);
+        }
+
+        const gameFrame = document.getElementById("gameFrame");
+        gameFrame.setAttribute("src", `/?t=${Date.now()}`);
+      }
+
+      async function launchGame() {
+        const mode = getLaunchMode();
+        const status = document.getElementById("status");
+
+        if (mode === "insert") {
+          await openGameInDashboard();
+          status.innerText = "ENGINE INITIALIZED IN DASHBOARD";
+          return;
+        }
+
+        await openGameWindow();
+        status.innerText = "ENGINE INITIALIZED IN NEW WINDOW";
+      }
+
       initTheme();
+      initLaunchMode();
       initWindowControls();
       setResolution();
     </script>
