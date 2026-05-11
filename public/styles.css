@@ -146,6 +146,17 @@ button {
 
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+i[data-lucide] {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+  flex: 0 0 auto;
 }
 
 button:hover {
@@ -257,7 +268,7 @@ input[type="file"]:hover::file-selector-button {
 /* ===== SELECT DROPDOWN ===== */
 select {
   width: 100%;
-  padding: 8px 12px;
+  padding: 8px 12px 8px 34px;
   appearance: none; /* Removes default browser arrow */
   background-color: rgba(255, 255, 255, 0.05);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
@@ -325,38 +336,24 @@ select option {
   gap: 8px;
 }
 
-.path-row {
-  margin-top: 10px;
-  display: flex;
-  gap: 8px;
-  align-items: stretch;
-}
-
-.path-input {
-  flex: 1;
-  min-width: 140px;
-  width: 100%;
-  min-height: 42px;
-  font-size: 14px;
-  padding: 10px 12px;
-  border: 1px solid var(--glass-border);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.05);
-  color: white;
-  box-sizing: border-box;
-}
-
-.path-row .primary-btn {
-  width: auto;
-  flex: 0 0 auto;
-  white-space: nowrap;
-}
-
 /* ===== RES GRID ===== */
 .res-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+}
+
+.select-wrap {
+  position: relative;
+}
+
+.select-wrap i[data-lucide] {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.8;
+  pointer-events: none;
 }
 
 /* ===== STATUS ELEMENT ===== */
@@ -381,7 +378,10 @@ select option {
 }
 
 .site-link a {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   width: 100%;
   text-align: center;
   text-decoration: none;
