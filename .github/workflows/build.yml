@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-13, macos-14]
         include:
           - os: ubuntu-latest
             script: npm run build:electron && npx electron-builder --linux --config electron-builder.config.cjs --publish never && npx electron-builder --linux AppImage --config electron-builder.config.cjs --publish never
@@ -44,9 +44,12 @@ jobs:
           - os: windows-latest
             script: npm run build:electron && npx electron-builder --win --config electron-builder.config.cjs --publish never
             artifact_name: unitywebrunner-windows
-          - os: macos-latest
-            script: npm run build:electron && npx electron-builder --mac --config electron-builder.config.cjs --publish never
-            artifact_name: unitywebrunner-macos
+          - os: macos-13
+            script: npm run build:electron && npx electron-builder --mac --x64 --config electron-builder.config.cjs --publish never
+            artifact_name: unitywebrunner-macos-intel
+          - os: macos-14
+            script: npm run build:electron && npx electron-builder --mac --arm64 --config electron-builder.config.cjs --publish never
+            artifact_name: unitywebrunner-macos-apple-silicon
 
     steps:
       - name: Checkout
