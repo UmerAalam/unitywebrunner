@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&display=swap");
+
 :root {
   --glass: rgba(255, 255, 255, 0.06);
   --glass-strong: rgba(255, 255, 255, 0.1);
@@ -185,7 +187,6 @@ body[data-theme="nord"] {
 
 /* ===== BASE ===== */
 body {
-  font-family: "Segoe UI", system-ui, sans-serif;
   margin: 0;
   min-height: 100vh;
   height: 100vh;
@@ -550,6 +551,8 @@ button:active {
 
 /* optional: smooth text rendering */
 * {
+  font-family: "Manrope", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

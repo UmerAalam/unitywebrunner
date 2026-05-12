@@ -1,0 +1,72 @@
+name: Build Desktop Artifacts
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  guard-first-release-tag:
+    name: Guard first release tag
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Ensure first release starts at v1.0.0
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          if [ "$TAG" = "v1.0.0" ]; then
+            exit 0
+          fi
+
+          git init -q
+          git remote add origin "https://github.com/${{ github.repository }}.git"
+          git fetch --tags --depth=1 origin
+
+          if ! git tag -l | grep -qx 'v1.0.0'; then
+            echo "First release must be v1.0.0. Tag v1.0.0 has not been pushed yet."
+            exit 1
+          fi
+
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: [guard-first-release-tag]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            script: npm run dist:linux && npm run dist:appimage
+            artifact_name: unitywebrunner-linux
+          - os: windows-latest
+            script: npm run dist:win
+            artifact_name: unitywebrunner-windows
+          - os: macos-latest
+            script: npm run dist:mac
+            artifact_name: unitywebrunner-macos
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build artifacts
+        run: ${{ matrix.script }}
+
+      - name: Upload release folder
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: release/**
+          if-no-files-found: error
