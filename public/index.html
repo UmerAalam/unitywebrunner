@@ -7,6 +7,21 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div id="startup-splash" class="startup-splash" aria-hidden="true">
+      <div class="startup-card">
+        <div class="startup-visual">
+          <img src="unitywebrunner-icon.webp" alt="UnityWebRunner logo" class="startup-logo" />
+        </div>
+        <div class="startup-progress-wrap">
+          <div id="startup-progress" class="startup-progress"></div>
+        </div>
+        <div class="startup-meta">
+          <div class="startup-brand">UnityWebRunner</div>
+          <div class="startup-note">Initializing Engine Dashboard...</div>
+        </div>
+      </div>
+    </div>
+
     <div class="titlebar">
       <div class="titlebar-brand">UnityWebRunner</div>
       <div class="titlebar-title">Engine Dashboard</div>
@@ -214,6 +229,31 @@
         if (closeBtn) closeBtn.addEventListener("click", () => window.electronAPI.closeWindow?.());
       }
 
+      function runStartupSplash() {
+        const splash = document.getElementById("startup-splash");
+        const progress = document.getElementById("startup-progress");
+        if (!splash || !progress) return;
+
+        const durationMs = 1600;
+        const startTime = performance.now();
+
+        function tick(now) {
+          const elapsed = now - startTime;
+          const ratio = Math.min(elapsed / durationMs, 1);
+          progress.style.width = `${Math.max(6, ratio * 100)}%`;
+
+          if (ratio < 1) {
+            requestAnimationFrame(tick);
+            return;
+          }
+
+          document.body.classList.add("app-ready");
+          setTimeout(() => splash.remove(), 320);
+        }
+
+        requestAnimationFrame(tick);
+      }
+
       async function upload() {
         const fileInput = document.getElementById("files");
         const status = document.getElementById("status");
@@ -339,6 +379,7 @@
       initLaunchMode();
       initWindowControls();
       setResolution();
+      runStartupSplash();
     </script>
   </body>
 </html>

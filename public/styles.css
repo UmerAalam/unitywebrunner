@@ -209,6 +209,10 @@ body {
   padding-top: 52px;
 }
 
+body:not(.app-ready) {
+  background: transparent !important;
+}
+
 body[data-theme="one-dark-pro"] {
   background: radial-gradient(
     circle at top,
@@ -290,6 +294,92 @@ body[data-theme="nord"] {
   );
 }
 
+body:not(.app-ready) .titlebar,
+body:not(.app-ready) .glass-panel {
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.app-ready .titlebar,
+body.app-ready .glass-panel {
+  opacity: 1;
+  transition: opacity 280ms ease;
+}
+
+.startup-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 56px 24px 24px;
+  background: transparent;
+}
+
+body.app-ready .startup-splash {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 280ms ease;
+}
+
+.startup-card {
+  width: min(760px, 92vw);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: #04070d;
+  box-shadow: 0 18px 58px rgba(0, 0, 0, 0.42);
+}
+
+.startup-visual {
+  height: min(42vh, 360px);
+  min-height: 190px;
+  background: #ecd35f;
+}
+
+.startup-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.startup-progress-wrap {
+  height: 4px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.startup-progress {
+  width: 6%;
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%);
+  border-radius: 0 2px 2px 0;
+}
+
+.startup-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 26px;
+  background: #05070c;
+}
+
+.startup-brand {
+  font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+  line-height: 1;
+  color: #f8fafc;
+  font-weight: 800;
+}
+
+.startup-note {
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  text-align: right;
+}
+
 /* ===== MAIN GLASS PANEL ===== */
 .glass-panel {
   display: grid;
@@ -304,6 +394,7 @@ body[data-theme="nord"] {
   padding: 0;
   box-sizing: border-box;
   background: transparent;
+  opacity: 1;
 }
 
 .titlebar {
@@ -322,6 +413,7 @@ body[data-theme="nord"] {
   -webkit-app-region: drag;
   user-select: none;
   z-index: 30;
+  opacity: 1;
 }
 
 .titlebar-brand {
