@@ -44,12 +44,9 @@ jobs:
           - os: windows-latest
             script: npm run build:electron && npx electron-builder --win --config electron-builder.config.cjs --publish never
             artifact_name: unitywebrunner-windows
-          - os: macos-13
-            script: npm run build:electron && npx electron-builder --mac --x64 --config electron-builder.config.cjs --publish never
-            artifact_name: unitywebrunner-macos-intel
-          - os: macos-14
-            script: npm run build:electron && npx electron-builder --mac --arm64 --config electron-builder.config.cjs --publish never
-            artifact_name: unitywebrunner-macos-apple-silicon
+          - os: macos-latest
+            script: npm run build:electron && npx electron-builder --mac --config electron-builder.config.cjs --publish never
+            artifact_name: unitywebrunner-macos
 
     steps:
       - name: Checkout
