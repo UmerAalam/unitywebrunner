@@ -105,4 +105,9 @@ module.exports = {
     icon: 'public/unitywebrunner-icon.png',
     target: ['dir'],
   },
+  mac: {
+    icon: 'public/unitywebrunner-icon.png',
+    target: ['dmg', 'zip'],
+    minimumSystemVersion: '13.0',
+  },
 };
