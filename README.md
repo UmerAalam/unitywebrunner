@@ -1,9 +1,10 @@
 ````
 # Unity WebRunner
 
-![Unity WebRunner](https://img.shields.io/badge/Unity-WebGL-black?style=for-the-badge&logo=unity)
-![Electron](https://img.shields.io/badge/Electron-App-47848F?style=for-the-badge&logo=electron&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-Local_Server-339933?style=for-the-badge&logo=node.js&logoColor=white)
+
+![Unity WebGL](https://img.shields.io/badge/Unity-WebGL-black?style=for-the-badge&logo=unity)
+![Electron App](https://img.shields.io/badge/Electron-App-47848F?style=for-the-badge&logo=electron&logoColor=white)
+![Node.js Local Server](https://img.shields.io/badge/Node.js-Local_Server-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![GitHub Repo stars](https://img.shields.io/github/stars/UmerAalam/unitywebrunner?style=social)
 
 Unity WebRunner is a lightweight Electron app for running Unity WebGL builds locally.
