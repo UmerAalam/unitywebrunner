@@ -12,6 +12,9 @@ It starts a local server for your Unity WebGL export, so you can test your game 
 
 Useful for testing Unity WebGL builds before uploading to itch.io, Netlify, Cloudflare Pages, GitHub Pages, or any web host.
 
+<img width="1919" height="1025" alt="image" src="https://github.com/user-attachments/assets/ca1d22e6-d5bd-44dd-921e-2df1d1d729b5" />
+
+
 ## Features
 
 - Run Unity WebGL builds locally
