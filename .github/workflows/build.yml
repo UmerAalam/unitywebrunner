@@ -6,6 +6,10 @@ on:
     tags:
       - "v*"
 
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   guard-first-release-tag:
     name: Guard first release tag
@@ -33,13 +37,14 @@ jobs:
     name: Build on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     needs: [guard-first-release-tag]
+    timeout-minutes: 120
     env:
       ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
       ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-13, macos-14]
+        os: [ubuntu-latest, windows-latest, macos-15, macos-15-arm64]
         include:
           - os: ubuntu-latest
             script: npm run build:electron && npx electron-builder --linux --config electron-builder.config.cjs --publish never && npx electron-builder --linux AppImage --config electron-builder.config.cjs --publish never
@@ -47,10 +52,10 @@ jobs:
           - os: windows-latest
             script: npm run build:electron && npx electron-builder --win --config electron-builder.config.cjs --publish never
             artifact_name: unitywebrunner-windows
-          - os: macos-13
+          - os: macos-15
             script: npm run build:electron && npx electron-builder --mac --x64 --config electron-builder.config.cjs --publish never
             artifact_name: unitywebrunner-macos-intel
-          - os: macos-14
+          - os: macos-15-arm64
             script: npm run build:electron && npx electron-builder --mac --arm64 --config electron-builder.config.cjs --publish never
             artifact_name: unitywebrunner-macos-apple-silicon
 
