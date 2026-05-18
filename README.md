@@ -1,4 +1,4 @@
-````md
+````
 # Unity WebRunner
 
 ![Unity WebRunner](https://img.shields.io/badge/Unity-WebGL-black?style=for-the-badge&logo=unity)
